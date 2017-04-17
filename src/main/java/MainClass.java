@@ -1,13 +1,11 @@
 import org.jdom2.JDOMException;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 
-/**
- * Created by Herman on 30.03.2017.
- */
+
 public class MainClass {
     public static void main(String[] args) throws JDOMException, IOException, SQLException {
         XMLhandler xml = new XMLhandler("src/main/resources/biginfo.xml");
@@ -23,18 +21,18 @@ public class MainClass {
         SQLWriter sql = new SQLWriter(dbUser, dbPass, dbName, dbHost);
         sql.connectToDB();
 
-        try (PrintWriter pw = new PrintWriter(output, "UTF-8")) {
+        try (FileWriter fileWriter = new FileWriter(output)) {
 
             for (int i = 1; i < xml.getNumberOfRows(); i++) {
 
                 for (int j = 0; j < 9; j++) {
-                    if (xml.getRow(i).get(j).toString().equals("")) {
-                        pw.print("NULL"+";");
+                    if (xml.getRow(i).get(j).equals("")) {
+                        fileWriter.write("NULL"+";");
                     }
                     else
-                        pw.print(xml.getRow(i).get(j).toString().replace(" ", "_")+";");
+                        fileWriter.write(xml.getRow(i).get(j).replace(" ", "_")+";");
                 }
-                pw.println();
+                fileWriter.write("\n");
             }
         }
     }

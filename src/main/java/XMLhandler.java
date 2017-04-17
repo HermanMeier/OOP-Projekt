@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Herman on 30.03.2017.
- */
+
 public class XMLhandler {
     private final String xmlFileName;
     private Document xmlDocument;

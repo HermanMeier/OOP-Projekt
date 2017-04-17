@@ -1,10 +1,6 @@
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Created by Ove on 02.04.2017.
- */
+
 public class SQLWriter {
     private String dbUser;
     private String dbPass;
