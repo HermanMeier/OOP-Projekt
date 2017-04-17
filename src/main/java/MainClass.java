@@ -2,7 +2,6 @@ import org.jdom2.JDOMException;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -22,11 +21,11 @@ public class MainClass {
         String dbName = "d54572_xmldata";
         String dbHost = "d54572.mysql.zonevs.eu";
 
-        SQLWriter sql = new SQLWriter(dbUser, dbPass, dbName, dbHost);
-        sql.connectToDB();
-        String dbColumns = sql.getColumnNames("trips");
-        System.out.println(dbColumns);
-        sql.disconnect();
+ //       SQLWriter sql = new SQLWriter(dbUser, dbPass, dbName, dbHost);
+ //       sql.connectToDB();
+ //       String dbColumns = sql.getColumnNames("trips");
+ //       System.out.println(dbColumns);
+ //       sql.disconnect();
 
         List<String> columns=xml.getColumns();
         System.out.println("Etteantud .xml failis on tulbad: ");
