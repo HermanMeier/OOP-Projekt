@@ -17,26 +17,20 @@ public class SQLWriter {
      * @param dbPass    kasutaja parool [Xmldata1]
      * @param dbName    andmebaasi nimi [d54572_xmldata]
      * @param dbHost    andmebaasi host [d54572.mysql.zonevs.eu]
-     * @param dbPort    andmebaasi port [3306]
-     * @param dbType    andmebaasi tüüp [mysql]
      */
 
-    public SQLWriter(String dbUser, String dbPass, String dbName, String dbHost, String dbPort, String dbType) {
+    public SQLWriter(String dbUser, String dbPass, String dbName, String dbHost) {
         this.dbUser = dbUser;
         this.dbPass = dbPass;
-        this.dbHost = "jdbc:" + dbType + "://" + dbHost + ":" + dbPort + "/" + dbName;
+        this.dbHost = "jdbc:mysql://" + dbHost + ":3306/" + dbName;
     }
 
     /**
      * Loob ühenduse andmebaasiga
      */
-    public void connectToDB() {
-        try {
-            this.con = DriverManager.getConnection(dbHost, dbUser, dbPass);
-            this.stmt = con.createStatement();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+    public void connectToDB() throws SQLException {
+        this.con = DriverManager.getConnection(dbHost, dbUser, dbPass);
+        this.stmt = con.createStatement();
     }
 
     /**
@@ -45,23 +39,15 @@ public class SQLWriter {
      * @param columns   tabeli veerud (komadega eraldatud nimekiri sõnena)
      * @param data      tabeli sisu (komadega eraldatud nimekiri sõnena)
      */
-    public void insertIntoDB(String table, String columns, String data) {
-        try {
-            stmt.executeQuery("INSERT INTO " + table + " (" + columns + ") VALUES ( " + data + ")");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+    public void insertIntoDB(String table, String columns, String data) throws SQLException {
+        stmt.executeQuery("INSERT INTO " + table + " (" + columns + ") VALUES ( " + data + ")");
     }
 
-    public String getColumnNames(String table) {
+    public String getColumnNames(String table) throws SQLException {
         String columnNames = null;
-        try {
-            ResultSet rs = stmt.executeQuery("SHOW COLUMNS FROM " + table);
-            if (rs.next()) {
-                columnNames = rs.getString(0);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        ResultSet rs = stmt.executeQuery("SHOW COLUMNS FROM " + table);
+        if (rs.next()) {
+            columnNames = rs.getString(0);
         }
         return columnNames;
     }
