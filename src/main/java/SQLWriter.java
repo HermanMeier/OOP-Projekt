@@ -32,7 +32,12 @@ public class SQLWriter {
         this.con = DriverManager.getConnection(dbHost, dbUser, dbPass);
         this.stmt = con.createStatement();
     }
-
+    /**
+     *
+     */
+    public void disconnect() throws SQLException {
+        this.con.close();
+    }
     /**
      * Koostab ja käivitab SQL käsu andmete vastavasse tabelisse sisestamiseks
      * @param table     tabali nimi
