@@ -2,6 +2,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,12 +38,10 @@ public class XMLhandler {
 
         //create document from xml file
         File inputFile = new File(xmlFileName);
-        Document document = saxBuilder.build(inputFile);
 
-        xmlDocument = document;
+        xmlDocument = saxBuilder.build(inputFile);
 
-        Element rootElement = xmlDocument.getRootElement();
-        root =rootElement;
+        root = xmlDocument.getRootElement();
     }
 
     /**
@@ -136,7 +135,6 @@ public class XMLhandler {
         Element current = root.getChildren().get(row);
 
         System.out.println(current.getChild(column).getText());
-        // TODO: 30.03.2017 Mida teha siis kui sellist veergu pole? Mingi om exception? Kehtib ka teiste meetodite kohta.
     }
 
     /**

@@ -1,5 +1,4 @@
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,7 +39,7 @@ public class SQLWriter {
     }
     /**
      * Koostab ja käivitab SQL käsu andmete vastavasse tabelisse sisestamiseks
-     * @param table     tabali nimi
+     * @param table     tabeli nimi
      * @param columns   tabeli veerud (komadega eraldatud nimekiri sõnena)
      * @param data      tabeli sisu (komadega eraldatud nimekiri sõnena)
      */
@@ -56,4 +55,16 @@ public class SQLWriter {
         }
         return columnNames;
     }
+
+    //Pole kindel kas see töötab korralikult
+    public List<String> getColumnNamesAsList(String table) throws SQLException {
+        List<String> columns = null;
+        ResultSet rs = stmt.executeQuery("SHOW COLUMNS FROM " + table);
+        while (rs.next())   {
+            columns.add(rs.getString(0));
+        }
+        return columns;
+    }
+
+    //TODO meetod mis tagastab tabelite listi
 }
