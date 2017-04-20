@@ -36,19 +36,22 @@ public class UI {
     }
 
     public void selectDB()  {
-        String user;
-        String password;
-
         System.out.println("Connect to database.");
 
         System.out.print("User: ");
-        user = input.nextLine();
+        String user = input.nextLine();
 
         System.out.print("Password: ");
-        password = input.nextLine();
+        String password = input.nextLine();
+
+        System.out.print("DB name: ");
+        String DBname = input.nextLine();
+
+        System.out.print("Host: ");
+        String host = input.nextLine();
 
         try {
-            sql = new SQLWriter(user, password, "", "");
+            sql = new SQLWriter(user, password, DBname, host);
             sql.connectToDB();
             System.out.println("Connected to database.");
         } catch (SQLException e) {
@@ -69,13 +72,13 @@ public class UI {
     //Seda saab kasutada et vaadet refreshida pärast muutuste tegemist
     private void printColumns(String table) throws SQLException {
         System.out.println("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
-        for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNamesAsList(table).size()); i++) {
-            if (sql.getColumnNamesAsList(table).size() <= i)
+        for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()); i++) {
+            if (sql.getColumnNames(table).size() <= i)
                 System.out.println(xml.getColumns().get(i) + "\t" + "");
             else if (xml.getColumns().size() <= i)
-                System.out.println("" + "\t" + sql.getColumnNamesAsList(table).get(i));
+                System.out.println("" + "\t" + sql.getColumnNames(table).get(i));
             else
-                System.out.println(xml.getColumns().get(i) + "\t" + sql.getColumnNamesAsList(table).get(i));
+                System.out.println(xml.getColumns().get(i) + "\t" + sql.getColumnNames(table).get(i));
         }
         System.out.println();
     }
@@ -87,16 +90,17 @@ public class UI {
         }
 
         System.out.println("Select table to edit.");
-        /* TODO vaja sql.getTables() meetodit
-        * for (int i = 0; i < sql.getTables().size(); i++) {
-            System.out.println(i + "-" + sql.gettables().get(i));
+        for (int i = 0; i < sql.getTableNames().size(); i++) {
+            System.out.println(i + "-" + sql.getTableNames().get(i));
         }
-        * */
+        String table;
+
+        //TODO siia oleks vaja mingit while küsimist. ootab kuni saab legit integeri
         System.out.print("Table number: ");
-        String table = input.nextLine();
+        int index = input.nextInt();
 
-        printColumns(table);
+        printColumns(sql.getTableNames().get(index));
 
-        //TODO igast vahetamised, kustutamised, liitmise jms.
+        //TODO igast vahetamised, kustutamised, liitmise jms. uus XMLtoSQL klass
     }
 }
