@@ -1,8 +1,9 @@
 import org.jdom2.JDOMException;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,51 +12,26 @@ import java.util.Scanner;
  */
 public class MainClass {
     public static void main(String[] args) throws JDOMException, IOException, SQLException {
-        //XMLhandler xml = new XMLhandler("src/main/resources/biginfo.xml");
-        //File output = new File("output.txt");
-        List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit");
+        XMLhandler xml = new XMLhandler("src/main/resources/biginfo.xml");
+        File output = new File("output.txt");
 
-        //xml.openXML();
+        xml.openXML();
 
-        String dbUser = "d54572_xmldata";
-        String dbPass = "Xmldata1";
-        String dbName = "d54572_xmldata";
-        String dbHost = "d54572.mysql.zonevs.eu";
+        String dbUser = "xmltosql";
+        String dbPass = "xmltosql";
+        String dbName = "xmltosql";
+        String dbHost = "db4free.net";
 
- //       SQLWriter sql = new SQLWriter(dbUser, dbPass, dbName, dbHost);
- //       sql.connectToDB();
- //       String dbColumns = sql.getColumnNames("trips");
- //       System.out.println(dbColumns);
- //       sql.disconnect();
+        SQLWriter sql = new SQLWriter(dbUser, dbPass, dbName, dbHost);
+        sql.connectToDB();
+        List<String> dbTables = sql.getTableNames();
+//        HashMap<String, List<String>> dbColumns = new HashMap<>();
+//        for (String dbTable : dbTables) {
+//            dbColumns.put(dbTable, sql.getColumnNames(dbTable));
+//        }
+        sql.disconnect();
 
-        try (Scanner sc = new Scanner(System.in))   {
-            UI ui = new UI(commands, sc);
-
-            while (true) {
-                String command = ui.waitForCommand();
-
-                switch (command) {
-                    case "?":
-                        for (String com : commands) {
-                            System.out.println(com);
-                        }
-                        break;
-                    case "db":
-                        ui.selectDB();
-                        break;
-                    case "xml":
-                        ui.selectXML();
-                        break;
-                    case "edit":
-                        ui.edit();
-                        break;
-                    case "exit":
-                        return;
-                }
-            }
-        }
-
-/*        List<String> columns=xml.getColumns();
+        List<String> columns=xml.getColumns();
         System.out.println("Etteantud .xml failis on tulbad: ");
         for (int i = 0; i < columns.size(); i++) {
             System.out.println(i+1+" - "+columns.get(i));
@@ -80,8 +56,8 @@ public class MainClass {
         columns=xml.getColumns();
         System.out.println("Etteantud .xml failis on tulbad: ");
         for (int i = 0; i < columns.size(); i++) {
-            System.out.println(i+1+" - "+columns.get(i));*/
+            System.out.println(i+1+" - "+columns.get(i));
         }
 
-    //}
+    }
 }
