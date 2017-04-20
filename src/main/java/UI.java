@@ -82,13 +82,13 @@ public class UI {
         String table = input.nextLine();
 
         System.out.println("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
-        for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNamesAsList(table).size()); i++) {
-            if (sql.getColumnNamesAsList(table).size() <= i)
+        for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()); i++) {
+            if (sql.getColumnNames(table).size() <= i)
                 System.out.println(xml.getColumns().get(i) + "\t" + "");
             else if (xml.getColumns().size() <= i)
-                System.out.println("" + "\t" + sql.getColumnNamesAsList(table).get(i));
+                System.out.println("" + "\t" + sql.getColumnNames(table).get(i));
             else
-                System.out.println(xml.getColumns().get(i) + "\t" + sql.getColumnNamesAsList(table).get(i));
+                System.out.println(xml.getColumns().get(i) + "\t" + sql.getColumnNames(table).get(i));
         }
         System.out.println();
 
