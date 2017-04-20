@@ -37,6 +37,8 @@ public class SQLWriter {
     public void disconnect() throws SQLException {
         this.con.close();
     }
+
+    //TODO data võiks olla list ja siin saaks selle sõneks teha
     /**
      * Koostab ja käivitab SQL käsu andmete vastavasse tabelisse sisestamiseks
      * @param table     tabeli nimi

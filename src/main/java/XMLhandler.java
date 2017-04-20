@@ -129,17 +129,27 @@ public class XMLhandler {
         return content;
     }
 
+    public List<String> getColumnData(String column)    {
+        List<String> content = new ArrayList<>();
+        for (int i = 0; i < getNumberOfRows(); i++) {
+            content.add(root.getChildren().get(i).getText());
+        }
+        return content;
+    }
+
+    public String getColumnName(int index)  {
+        return root.getChildren().get(index).getText();
+    }
+
     /**
      * Selle meetodiga saab küsida kindla välja väärtust tabelis.
      *
      * @param column    Milline tulp(kasuta getColumns() tagastatud väärtusi)
      * @param row       Mitmes rida
      */
-    public void getValue(String column, int row)  {
+    public String getValue(String column, int row)  {
         Element current = root.getChildren().get(row);
-
-        System.out.println(current.getChild(column).getText());
-        // TODO: 30.03.2017 Mida teha siis kui sellist veergu pole? Mingi om exception? Kehtib ka teiste meetodite kohta.
+        return current.getChild(column).getText();
     }
 
     /**

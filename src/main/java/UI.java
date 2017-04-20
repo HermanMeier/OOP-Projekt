@@ -66,6 +66,20 @@ public class UI {
         System.out.println("Opened xml document.");
     }
 
+    //Seda saab kasutada et vaadet refreshida pärast muutuste tegemist
+    private void printColumns(String table) throws SQLException {
+        System.out.println("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
+        for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNamesAsList(table).size()); i++) {
+            if (sql.getColumnNamesAsList(table).size() <= i)
+                System.out.println(xml.getColumns().get(i) + "\t" + "");
+            else if (xml.getColumns().size() <= i)
+                System.out.println("" + "\t" + sql.getColumnNamesAsList(table).get(i));
+            else
+                System.out.println(xml.getColumns().get(i) + "\t" + sql.getColumnNamesAsList(table).get(i));
+        }
+        System.out.println();
+    }
+
     public void edit() throws SQLException {
         if (xml == null || sql == null) {
             System.out.println("XML file not opened or not connected to database.");
@@ -81,16 +95,7 @@ public class UI {
         System.out.print("Table number: ");
         String table = input.nextLine();
 
-        System.out.println("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
-        for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNamesAsList(table).size()); i++) {
-            if (sql.getColumnNamesAsList(table).size() <= i)
-                System.out.println(xml.getColumns().get(i) + "\t" + "");
-            else if (xml.getColumns().size() <= i)
-                System.out.println("" + "\t" + sql.getColumnNamesAsList(table).get(i));
-            else
-                System.out.println(xml.getColumns().get(i) + "\t" + sql.getColumnNamesAsList(table).get(i));
-        }
-        System.out.println();
+        printColumns(table);
 
         //TODO igast vahetamised, kustutamised, liitmise jms.
     }
