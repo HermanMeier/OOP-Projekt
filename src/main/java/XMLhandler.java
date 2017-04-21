@@ -132,7 +132,7 @@ public class XMLhandler {
     public List<String> getColumnData(String column)    {
         List<String> content = new ArrayList<>();
         for (int i = 0; i < getNumberOfRows(); i++) {
-            content.add(root.getChildren().get(i).getText());
+            content.add(root.getChildren().get(i).getChild(column).getText());
         }
         return content;
     }

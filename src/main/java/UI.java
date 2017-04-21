@@ -59,14 +59,17 @@ public class UI {
         }
     }
 
-    public void selectXML() throws JDOMException, IOException {
-        /* TODO
-        * Küsib failinime või urli
-        * Ajutiselt avab selle näite faili
-        * */
-        xml = new XMLhandler("src/main/resources/biginfo.xml");
-        xml.openXML();
-        System.out.println("Opened xml document.");
+    public void selectXML() {
+        System.out.println("Enter url or path: ");
+        String source = input.nextLine();
+
+        try {
+            xml = new XMLhandler(source);
+            xml.openXML();
+            System.out.println("Opened xml document.");
+        } catch (JDOMException | IOException e) {
+            System.out.println("Failed to open xml file.");
+        }
     }
 
     //Seda saab kasutada et vaadet refreshida pärast muutuste tegemist
