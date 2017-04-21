@@ -1,3 +1,7 @@
+package server;
+
+import DBStuff.SQLWriter;
+import DBStuff.XMLhandler;
 import org.jdom2.JDOMException;
 
 import java.io.IOException;
@@ -104,6 +108,6 @@ public class UI {
 
         printColumns(sql.getTableNames().get(index));
 
-        //TODO igast vahetamised, kustutamised, liitmise jms. uus XMLtoSQL klass
+        //TODO igast vahetamised, kustutamised, liitmise jms. uus DBStuff.XMLtoSQL klass
     }
 }

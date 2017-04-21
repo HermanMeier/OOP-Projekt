@@ -1,4 +1,5 @@
 import org.jdom2.JDOMException;
+import server.UI;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ public class MainClass {
         String dbName = "xmltosql";
         String dbHost = "db4free.net";
 
-        SQLWriter sql = new SQLWriter(dbUser, dbPass, dbName, dbHost);
+        DBStuff.SQLWriter sql = new DBStuff.SQLWriter(dbUser, dbPass, dbName, dbHost);
         sql.connectToDB();
         List<String> dbTables = sql.getTableNames();
 //        HashMap<String, List<String>> dbColumns = new HashMap<>();

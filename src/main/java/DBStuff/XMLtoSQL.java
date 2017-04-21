@@ -1,3 +1,5 @@
+package DBStuff;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class XMLtoSQL {
 
     public void addColumnToDatabase(int columnIndex) throws SQLException {
         String columnName = xml.getColumnName(columnIndex);
-        //List<String> data = xml.getColumnData(columnName);       //vt SQLWriter meetodit
+        //List<String> data = xml.getColumnData(columnName);       //vt DBStuff.SQLWriter meetodit
         //sql.insertIntoDB(table, columnName, data);
     }
 
