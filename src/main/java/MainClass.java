@@ -4,26 +4,27 @@ import server.UI;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
 public class MainClass {
     public static void main(String[] args) throws JDOMException, IOException, SQLException {
         List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit");
-
-/*        String dbUser = "xmltosql";
-        String dbPass = "xmltosql";
-        String dbName = "xmltosql";
-        String dbHost = "db4free.net";
-
-        DBStuff.SQLWriter sql = new DBStuff.SQLWriter(dbUser, dbPass, dbName, dbHost);
-        sql.connectToDB();
-        List<String> dbTables = sql.getTableNames();
-//        HashMap<String, List<String>> dbColumns = new HashMap<>();
+        DBStuff.SQLWriter sql;
+        List<String> dbTables;
+        HashMap<String, List<String>> dbColumns = new HashMap<>();
+        /**
+         * Sample database credentials:
+         * User: xmltosql
+         * Password: xmltosql
+         * Database name: xmltosql
+         * Database host: db4free.net
+         */
 //        for (String dbTable : dbTables) {
 //            dbColumns.put(dbTable, sql.getColumnNames(dbTable));
 //        }
-        sql.disconnect();*/
+
 
 
         try (Scanner sc = new Scanner(System.in))   {
@@ -39,7 +40,14 @@ public class MainClass {
                         }
                         break;
                     case "db":
-                        ui.selectDB();
+                        String[] dbLoginData = ui.selectDB();
+                        sql = new DBStuff.SQLWriter(dbLoginData[0], dbLoginData[1], dbLoginData[2], dbLoginData[3]);
+                        sql.connectToDB();
+                        dbTables = sql.getTableNames();
+                        for (String dbTable : dbTables) {
+                            dbColumns.put(dbTable, sql.getColumnNames(dbTable));
+                        }
+                        System.out.println("Successfully connected to database!");
                         break;
                     case "xml":
                         ui.selectXML();
@@ -48,6 +56,9 @@ public class MainClass {
                         ui.edit();
                         break;
                     case "exit":
+/*                        if (sql != null) {
+                            sql.disconnect();
+                        }*/
                         return;
                 }
             }

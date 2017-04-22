@@ -1,5 +1,7 @@
 package DBStuff;
 
+import com.sun.deploy.util.StringUtils;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,18 +47,27 @@ public class SQLWriter {
         return dbHost;
     }
 
-    //TODO data võiks olla list ja siin saaks selle sõneks teha
     /**
      * Koostab ja käivitab SQL käsu andmete vastavasse tabelisse sisestamiseks
-     * @param table     tabeli nimi
-     * @param columns   tabeli veerud (komadega eraldatud nimekiri sõnena)
-     * @param data      tabeli sisu (komadega eraldatud nimekiri sõnena)
+     * @param table     tabeli nimi String
+     * @param columns   tabeli veerud String[]
+     * @param data      tabeli sisu String[]
      */
-    public void insertIntoDB(String table, String columns, String data) throws SQLException {
+    public void insertIntoDB(String table, String[] columns, String[] data) throws SQLException {
+        StringBuilder sb = new StringBuilder();
+        for (String c : columns) {
+            sb.append(", ").append(c);
+        }
+        String cols = sb.substring(2);
+        sb = new StringBuilder();
+        for (String d : data) {
+            sb.append(", ").append(d);
+        }
+        String values = sb.substring(2);
         PreparedStatement ps = con.prepareStatement("INSERT INTO ? ( ? ) VALUES ( ? );");
         ps.setString(1, table);
-        ps.setString(2, columns);
-        ps.setString(3, data);
+        ps.setString(2, cols);
+        ps.setString(3, values);
         ps.executeUpdate();
     }
 

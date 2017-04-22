@@ -52,7 +52,7 @@ public class UI {
 
     public String[] selectXML() {
         String[] XMLinfo = new String[2];
-        System.out.println("Type http to send url to server or file to select file from your own computer");
+        System.out.println("Type \"http\" to send url to server or \"file\" to select file from your own computer");
         XMLinfo[0] = input.nextLine();
 
         switch (XMLinfo[0]) {
@@ -61,7 +61,7 @@ public class UI {
                 XMLinfo[1] = input.nextLine();
                 break;
             case "file":
-                System.out.print("Enter file paht: ");
+                System.out.print("Enter file with path: ");
                 XMLinfo[1] = input.nextLine();
                 break;
             default:
