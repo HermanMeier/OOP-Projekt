@@ -41,6 +41,10 @@ public class SQLWriter {
         this.con.close();
     }
 
+    public String getDbHost() {
+        return dbHost;
+    }
+
     //TODO data võiks olla list ja siin saaks selle sõneks teha
     /**
      * Koostab ja käivitab SQL käsu andmete vastavasse tabelisse sisestamiseks

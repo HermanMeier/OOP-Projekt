@@ -4,17 +4,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Halva nimega klass. Siia võiks tulla kõik need funktsioonid mida saab avatud xml ja db teha.
+ * Siia võiks tulla kõik need funktsioonid mida saab avatud xml ja db teha.
  * Iga funktsioon võiks olla oma meetod.
  *
- * Created by Herman on 20.04.2017.
  */
-public class XMLtoSQL {
+public class editDatabase {
     private final XMLhandler xml;
     private final SQLWriter sql;
     private final String table;
 
-    public XMLtoSQL(XMLhandler xml, SQLWriter sql, String table) {
+    public editDatabase(XMLhandler xml, SQLWriter sql, String table) {
         this.xml = xml;
         this.sql = sql;
         this.table = table;

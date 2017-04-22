@@ -1,22 +1,13 @@
 package server;
 
-import DBStuff.SQLWriter;
-import DBStuff.XMLhandler;
-import org.jdom2.JDOMException;
-
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Created by Herman on 19.04.2017.
- */
+
 public class UI {
     private final List<String> commands;
     private final Scanner input;
-    private SQLWriter sql = null;
-    private XMLhandler xml = null;
 
 
     public UI(List<String> commands, Scanner input) {
@@ -39,46 +30,52 @@ public class UI {
         return null;
     }
 
-    public void selectDB()  {
+    public String[] selectDB()  {
+        String[] DBinfo = new String[4];
         System.out.println("Connect to database.");
 
         System.out.print("User: ");
-        String user = input.nextLine();
+        DBinfo[0] = input.nextLine();
 
         System.out.print("Password: ");
-        String password = input.nextLine();
+        DBinfo[1] = input.nextLine();
 
         System.out.print("DB name: ");
-        String DBname = input.nextLine();
+        DBinfo[2] = input.nextLine();
 
         System.out.print("Host: ");
-        String host = input.nextLine();
+        DBinfo[3] = input.nextLine();
 
-        try {
-            sql = new SQLWriter(user, password, DBname, host);
-            sql.connectToDB();
-            System.out.println("Connected to database.");
-        } catch (SQLException e) {
-            System.out.println("Failed to connect to database.");
-        }
+        //See info tuleb saata serverile
+        return DBinfo;
     }
 
-    public void selectXML() {
-        System.out.println("Enter url or path: ");
-        String source = input.nextLine();
+    public String[] selectXML() {
+        String[] XMLinfo = new String[2];
+        System.out.println("Type http to send url to server or file to select file from your own computer");
+        XMLinfo[0] = input.nextLine();
 
-        try {
-            xml = new XMLhandler(source);
-            xml.openXML();
-            System.out.println("Opened xml document.");
-        } catch (JDOMException | IOException e) {
-            System.out.println("Failed to open xml file.");
+        switch (XMLinfo[0]) {
+            case "http":
+                System.out.print("Enter url: ");
+                XMLinfo[1] = input.nextLine();
+                break;
+            case "file":
+                System.out.print("Enter file paht: ");
+                XMLinfo[1] = input.nextLine();
+                break;
+            default:
+                XMLinfo = null;
+                break;
         }
+
+        //See info tuleb saata serverile
+        return XMLinfo;
     }
 
     //Seda saab kasutada et vaadet refreshida pärast muutuste tegemist
     private void printColumns(String table) throws SQLException {
-        System.out.println("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
+/*        System.out.println("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
         for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()); i++) {
             if (sql.getColumnNames(table).size() <= i)
                 System.out.println(xml.getColumns().get(i) + "\t" + "");
@@ -87,11 +84,24 @@ public class UI {
             else
                 System.out.println(xml.getColumns().get(i) + "\t" + sql.getColumnNames(table).get(i));
         }
-        System.out.println();
+        System.out.println();*/
     }
 
-    public void edit() throws SQLException {
-        if (xml == null || sql == null) {
+    public String[] edit()  {
+        String[] info = new String[3];
+
+        System.out.print("Enter db to edit: ");
+        info[0] = input.nextLine();
+
+        System.out.print("Enter db table to edit: ");
+        info[1] = input.nextLine();
+
+        System.out.print("Enter xml to edit: ");
+        info[2] = input.nextLine();
+
+        return info;
+
+        /*if (xml == null || sql == null) {
             System.out.println("XML file not opened or not connected to database.");
             return;
         }
@@ -102,12 +112,10 @@ public class UI {
         }
         String table;
 
-        //TODO siia oleks vaja mingit while küsimist. ootab kuni saab legit integeri
         System.out.print("Table number: ");
         int index = input.nextInt();
 
-        printColumns(sql.getTableNames().get(index));
+        printColumns(sql.getTableNames().get(index));*/
 
-        //TODO igast vahetamised, kustutamised, liitmise jms. uus DBStuff.XMLtoSQL klass
     }
 }

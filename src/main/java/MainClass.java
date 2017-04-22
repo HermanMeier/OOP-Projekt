@@ -7,9 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Created by Herman on 30.03.2017.
- */
 public class MainClass {
     public static void main(String[] args) throws JDOMException, IOException, SQLException {
         List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit");
