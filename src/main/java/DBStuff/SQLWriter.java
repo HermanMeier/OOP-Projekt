@@ -1,7 +1,5 @@
 package DBStuff;
 
-import com.sun.deploy.util.StringUtils;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +41,6 @@ public class SQLWriter {
      */
     public void disconnect() throws SQLException {
         this.con.close();
-    }
-
-    public String getDbHost() {
-        return dbHost;
     }
 
     public String getDbName() {

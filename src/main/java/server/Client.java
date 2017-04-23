@@ -33,7 +33,10 @@ public class Client {
                         String[] DBinfo = ui.selectDB();
 
                         for (String s : DBinfo) {
-                            dos.writeUTF(s);
+                            if (s == null)
+                                dos.writeUTF("");
+                            else
+                                dos.writeUTF(s);
                         }
 
                         System.out.println(dis.readUTF());
@@ -56,7 +59,6 @@ public class Client {
                             File file = new File(XMLinfo[1]);
 
                             if (file.exists() && XMLinfo[1].substring(XMLinfo[1].length()-4, XMLinfo[1].length()).equals(".xml"))  {
-                                //TODO faili saatmises on kuskil bug. Kui faili saadad siis server salvestab faili ales siis kui klient ennast sulgeb.
                                 dos.writeBoolean(true);
                                 sendFile(file, dos);
                                 System.out.println(dis.readUTF());
@@ -83,10 +85,11 @@ public class Client {
                         ui.receiveDataToEdit(dis);
 
                         boolean inEdit = true;
-                        List<String> editCommands = Arrays.asList("close", "?", "add", "del", "merge");
+                        List<String> editCommands = Arrays.asList("close:", "?:", "add:", "del:", "merge:");
                         while (inEdit) {
                             String editCommand = ui.waitForCommand(editCommands);
                             String msg;
+
                             sendCommand(editCommand, dos);
                             switch (editCommand.substring(0, editCommand.indexOf(":"))) {
                                 case "close":

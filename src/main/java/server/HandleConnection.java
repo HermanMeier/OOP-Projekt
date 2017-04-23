@@ -100,7 +100,7 @@ public class HandleConnection implements Runnable {
                             break;
                         }
                         dos.writeBoolean(true);
-                        dos.writeUTF("Now in edit mode. Type exit to close, ? for help.");
+                        dos.writeUTF("Now in edit mode. Type exit to close, ? for help. Work in progress, so expect bugs...");
 
                         sendDataToEdit(xml, db, table, dos);
                         boolean inEdit = true;
@@ -109,9 +109,7 @@ public class HandleConnection implements Runnable {
                             String function = editCommand.substring(0, editCommand.indexOf(":"));
                             String[] parameters = editCommand.substring(editCommand.indexOf(":")).trim().split(",");
 
-                            if (function.equals("?")) {
-
-                            } else if (function.equals("close")) {
+                            if (function.equals("close")) {
                                 inEdit = false;
                             } else if (function.equals("add") || function.equals("del")) {
                                 List<Integer> fails = editDatabase(function, parameters);
@@ -173,7 +171,7 @@ public class HandleConnection implements Runnable {
         List<Integer> fails = null;
         for (int i = 0; i < parameters.length; i++) {
             if (!StringUtils.isStrictlyNumeric(parameters[i])) {
-                    fails.add(i);
+                fails.add(i);
                 } else {
                     switch (function)   {
                         case "add":

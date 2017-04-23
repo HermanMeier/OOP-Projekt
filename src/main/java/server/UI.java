@@ -18,7 +18,8 @@ public class UI {
         System.out.print(">> ");
         while (input.hasNextLine())    {
             String com = input.nextLine();
-            if (commands.contains(com) || commands.contains(com.substring(0, com.indexOf(":")))) {
+
+            if (commands.contains(com)) {
                 return com;
             }
             else    {
@@ -52,23 +53,23 @@ public class UI {
         String[] XMLinfo = new String[2];
         System.out.println("Type \"http\" to send url to server or \"file\" to select file from your own computer");
         XMLinfo[0] = input.nextLine();
+        if (XMLinfo[0] != null) {
+            switch (XMLinfo[0]) {
+                case "http":
+                    System.out.print("Enter url: ");
+                    XMLinfo[1] = input.nextLine();
+                    break;
+                case "file":
+                    System.out.print("Enter file with path: ");
+                    XMLinfo[1] = input.nextLine();
+                    break;
+                case "existing":
 
-        switch (XMLinfo[0]) {
-            case "http":
-                System.out.print("Enter url: ");
-                XMLinfo[1] = input.nextLine();
-                break;
-            case "file":
-                System.out.print("Enter file with path: ");
-                XMLinfo[1] = input.nextLine();
-                break;
-            case "existing":
-
-            default:
-                XMLinfo = null;
-                break;
+                default:
+                    XMLinfo = null;
+                    break;
+            }
         }
-
         return XMLinfo;
     }
 
