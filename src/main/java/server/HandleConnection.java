@@ -2,7 +2,6 @@ package server;
 
 import DBStuff.SQLWriter;
 import DBStuff.XMLhandler;
-import org.apache.commons.io.FileUtils;
 import org.jdom2.JDOMException;
 
 import java.io.*;
@@ -62,8 +61,7 @@ public class HandleConnection implements Runnable {
                             String url=dis.readUTF();
                             String filename=url.split("/")[url.split("/").length-1]+".xml";
                             file = new File("xmlFiles\\"+filename);
-                            FileUtils.copyURLToFile(new URL(url), file);
-                            dos.writeUTF("File received.");
+                            copyURLtoFile(new URL(url), file);
                         }
 
 
@@ -173,6 +171,20 @@ public class HandleConnection implements Runnable {
             fileNames.add(file.getName());
         }
         return fileNames;
+    }
+
+    private static void copyURLtoFile(URL url, File file) throws IOException{
+
+        try(InputStream in = url.openStream();
+            FileOutputStream out = new FileOutputStream(file)){
+
+                byte[] buffer = new byte[1024];
+                int count;
+                while ((count = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, count);
+                }
+                out.flush();
+        }
     }
 }
 

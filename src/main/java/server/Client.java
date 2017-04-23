@@ -49,6 +49,7 @@ public class Client {
                             dos.writeUTF("sending URL");
                             dos.writeUTF(XMLinfo[1]);
                             System.out.println(dis.readUTF());
+
                             break;
                         }
                         else if(XMLinfo[0].equals("file")){
