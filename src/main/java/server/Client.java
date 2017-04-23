@@ -84,7 +84,6 @@ public class Client {
 
                         break;
                     case "exit":
-                        //TODO server viskab hullult exceptioneid kui klient sulgub
                         return;
                 }
             }

@@ -58,15 +58,14 @@ public class HandleConnection implements Runnable {
                                 break;
                         } else if (answer.equals("sending URL")) {
                             String url=dis.readUTF();
-                            String filename=url.split("/")[url.split("/").length-1];
-                            file = new File(filename);
+                            String filename=url.split("/")[url.split("/").length-1]+".xml";
+                            file = new File("xmlFiles\\"+filename);
 
                             FileUtils.copyURLToFile(new URL(url), file);
                             dos.writeUTF("File received.");
-                            //TODO convert URL to file
                         }
 
-                        if (!answer.equals("")) {
+                        if (!answer.equals("")&&file.exists()) {
                             try {
                                 xml = new XMLhandler(file.getName());
                                 xml.openXML();
@@ -127,7 +126,7 @@ public class HandleConnection implements Runnable {
         String fileName = dis.readUTF();
         long fileSize = dis.readLong();
 
-        File file = new File(fileName);
+        File file = new File("xmlFiles\\"+fileName);
         file.createNewFile();
 
         if (fileSize>0) {
