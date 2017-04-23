@@ -2,18 +2,16 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 public class Client {
     private final static int BUFFER_SIZE=1024;
     private final static List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit", "existingfiles");
 
-    public static void main(String[] args) throws IOException, SQLException {
-        List<String> dbTables;
-        HashMap<String, List<String>> dbColumns = new HashMap<>();
-        DBStuff.SQLWriter sql;
-
+    public static void main(String[] args) throws IOException {
         try(Socket sock = new Socket("localhost", 1337);
             DataOutputStream dos=new DataOutputStream(sock.getOutputStream());
             DataInputStream dis=new DataInputStream(sock.getInputStream());
@@ -32,14 +30,13 @@ public class Client {
                         }
                         break;
                     case "db":
-                        String[] dbLoginData = ui.selectDB();
-                        sql = new DBStuff.SQLWriter(dbLoginData[0], dbLoginData[1], dbLoginData[2], dbLoginData[3]);
-                        sql.connectToDB();
-                        dbTables = sql.getTableNames();
-                        for (String dbTable : dbTables) {
-                            dbColumns.put(dbTable, sql.getColumnNames(dbTable));
+                        String[] DBinfo = ui.selectDB();
+
+                        for (String s : DBinfo) {
+                            dos.writeUTF(s);
                         }
-                        System.out.println("Successfully connected to database!");
+
+                        System.out.println(dis.readUTF());
                         break;
                     case "xml":
                         String[] XMLinfo = ui.selectXML();
