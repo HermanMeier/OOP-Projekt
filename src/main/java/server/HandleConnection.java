@@ -9,6 +9,8 @@ import java.io.*;
 import java.net.Socket;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HandleConnection implements Runnable {
     private final Socket sock;
@@ -60,10 +62,11 @@ public class HandleConnection implements Runnable {
                             String url=dis.readUTF();
                             String filename=url.split("/")[url.split("/").length-1]+".xml";
                             file = new File("xmlFiles\\"+filename);
-
                             FileUtils.copyURLToFile(new URL(url), file);
                             dos.writeUTF("File received.");
                         }
+
+
 
                         if (!answer.equals("")&&file.exists()) {
                             try {
@@ -101,6 +104,26 @@ public class HandleConnection implements Runnable {
 
                         //TODO vaja see edit mode valmis teha, server peaks kasutama editDatabase klassi. xml ja ab sisu saatmiseks on osa koodi ui klassi commentis olemas
                         break;
+                    case "existingfiles":
+                        List<String> fileNames=getExistingFiles();
+                        dos.writeInt(fileNames.size());
+                        for (String fileName : fileNames) {
+                            dos.writeUTF(fileName);
+                        }
+
+                        if (dis.readBoolean()){
+                            try {
+                                xml = new XMLhandler(dis.readUTF());
+                                xml.openXML();
+                                dos.writeUTF("Opened XML document.");
+                            } catch (JDOMException e) {
+                                e.printStackTrace();
+                                dos.writeUTF("Failed to open XML document.");
+                            }
+
+                        }
+                        break;
+
                     case "exit":
                         running=false;
                         break;
@@ -140,6 +163,16 @@ public class HandleConnection implements Runnable {
             }
         }
         return file;
+    }
+
+    private static List<String> getExistingFiles(){
+        File directory=new File("xmlFiles");
+        File[] fileArray=directory.listFiles();
+        List<String> fileNames=new ArrayList();
+        for (File file : fileArray) {
+            fileNames.add(file.getName());
+        }
+        return fileNames;
     }
 }
 

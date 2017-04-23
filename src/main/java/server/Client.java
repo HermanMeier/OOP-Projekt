@@ -2,13 +2,14 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Client {
     private final static int BUFFER_SIZE=1024;
-    private final static List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit");
+    private final static List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit", "existingfiles");
 
     public static void main(String[] args) throws IOException {
         try(Socket sock = new Socket("localhost", 1337);
@@ -83,6 +84,51 @@ public class Client {
                         //TODO uued käsud mida serverile saata. ui peaks salvestama ja kuvama serveri poolt saadetud sisu ja seda uuendama kui muutus õnnestus
 
                         break;
+                    case "existingfiles":
+                        int amount= dis.readInt();
+                        if (amount==0) {
+                            System.out.println("Server has no files");
+                            break;
+                        }
+                        System.out.println("Server has files: ");
+                        List<String> fileNames=new ArrayList<>();
+                        for (int i = 0; i < amount; i++) {
+                            String fileName=dis.readUTF();
+                            System.out.println(fileName);
+                            fileNames.add(fileName);
+                        }
+
+                        boolean running=true;
+                        while (running){
+                            System.out.println("Do you wish to use one of those files? (yes/no)");
+                            String answer=sc.nextLine();
+                            if (answer.equals("yes")){
+                                dos.writeBoolean(true);
+                                System.out.println("Which file would you like to use?");
+                                while(true){
+                                    String filename=sc.nextLine();
+                                    if (fileNames.contains(filename)){
+                                        dos.writeUTF(filename);
+                                        break;
+                                    }
+                                    else {
+                                        System.out.println("No such file");
+                                    }
+                                }
+                                System.out.println(dis.readUTF());
+                                running=false;
+                            }
+                            else if(answer.equals("no")){
+                                dos.writeBoolean(false);
+                                running =false;
+                            }
+                            else{
+                                System.out.println("Incorrect input");
+                            }
+                        }
+
+
+                        break;
                     case "exit":
                         return;
                 }
@@ -124,4 +170,6 @@ public class Client {
 
         return true;
      }
+
+
 }
