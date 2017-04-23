@@ -9,7 +9,7 @@ To run the program you must first run the server and then the client class.
 For testing purposes you can use:
 * biginfo.xml in the xmlFiles directory as the XML source;
 * Database with these credentials:
-** user: xmltosql
-** password: xmltosql
-** database name: xmltosql
-** database host: db4free.net
+1. user: xmltosql
+2. password: xmltosql
+3. database name: xmltosql
+4. database host: db4free.net
