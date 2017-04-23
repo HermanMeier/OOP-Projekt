@@ -35,11 +35,6 @@ public class XMLhandler {
         //create document builder
         SAXBuilder saxBuilder = new SAXBuilder();
 
-        /*if (xmlFileName.startsWith("http://")||xmlFileName.startsWith("https://")){
-            File file=new File("name.txt");
-            FileUtils.copyURLToFile(new URL(xmlFileName), file);
-            xmlDocument= saxBuilder.build(file);
-        }*/
 
         File inputFile = new File("xmlFiles\\"+xmlFileName);
         xmlDocument = saxBuilder.build(inputFile);

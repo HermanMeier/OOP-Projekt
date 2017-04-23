@@ -62,6 +62,8 @@ public class UI {
                 System.out.print("Enter file with path: ");
                 XMLinfo[1] = input.nextLine();
                 break;
+            case "existing":
+
             default:
                 XMLinfo = null;
                 break;

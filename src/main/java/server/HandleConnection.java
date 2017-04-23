@@ -2,8 +2,6 @@ package server;
 
 import DBStuff.SQLWriter;
 import DBStuff.XMLhandler;
-import DBStuff.editDatabase;
-import com.mysql.jdbc.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.JDOMException;
 
@@ -11,14 +9,12 @@ import java.io.*;
 import java.net.Socket;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.List;
 
 public class HandleConnection implements Runnable {
     private final Socket sock;
     private static final int BUFFER_SIZE=1024;
     private SQLWriter db = null;
     private XMLhandler xml = null;
-    private editDatabase edit = null;
 
     HandleConnection(Socket sock) {
         this.sock = sock;
@@ -81,53 +77,29 @@ public class HandleConnection implements Runnable {
 
                         break;
                     case "edit":
-                        String dbName = dis.readUTF();
+                        String db = dis.readUTF();
                         String table = dis.readUTF();
                         String xmlName = dis.readUTF();
 
-                        if (db == null || !db.getDbName().equals(dbName)) {
+                        if (!this.db.getDbHost().equals(db)) {
                             dos.writeBoolean(false);
                             dos.writeUTF("Not connected to database.");
                             break;
                         }
-                        if (!db.getTableNames().contains(table)) {
+                        if (!this.db.getTableNames().contains(table)) {
                             dos.writeBoolean(false);
                             dos.writeUTF("No such table in database.");
                             break;
                         }
-                        if (xml == null || !xml.getXmlFileName().equals(xmlName)) {
+                        if (!xml.getXmlFileName().equals(xmlName)) {
                             dos.writeBoolean(false);
                             dos.writeUTF("XML document not opened.");
                             break;
                         }
                         dos.writeBoolean(true);
-                        dos.writeUTF("Now in edit mode. Type exit to close, ? for help.");
+                        dos.writeUTF("Now in edit mode. Type exit to close.");
 
-                        sendDataToEdit(xml, db, table, dos);
-                        boolean inEdit = true;
-                        while (inEdit) {
-                            String editCommand = dis.readUTF();
-                            String function = editCommand.substring(0, editCommand.indexOf(":"));
-                            String[] parameters = editCommand.substring(editCommand.indexOf(":")).trim().split(",");
-
-                            if (function.equals("?")) {
-                            } else if (function.equals("close")) {
-                                inEdit = false;
-
-                            } else if (function.equals("add") || function.equals("del")) {
-                                List<Integer> fails = editDatabase(function, parameters);
-
-                                if (function.equals("add"))
-                                    dos.writeUTF("Added " + (parameters.length - fails.size()) + " columns. Failed to add: " + fails.toString() + " .");
-                                else if (function.equals("del"))
-                                    dos.writeUTF("Deleted " + (parameters.length - fails.size()) + " columns. Failed to delete: " + fails.toString() + " .");
-
-                                dos.writeInt(fails.size());
-                                if (fails.size() == 0)
-                                    sendDataToEdit(xml, db, table, dos);
-                            }
-                        }
-
+                        //TODO vaja see edit mode valmis teha, server peaks kasutama editDatabase klassi. xml ja ab sisu saatmiseks on osa koodi ui klassi commentis olemas
                         break;
                     case "exit":
                         running=false;
@@ -137,40 +109,6 @@ public class HandleConnection implements Runnable {
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void sendDataToEdit(XMLhandler xml, SQLWriter sql, String table, DataOutputStream dos) throws SQLException, IOException {
-        dos.writeUTF("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
-        dos.writeInt(Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()));
-        for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()); i++) {
-            String line;
-            if (sql.getColumnNames(table).size() <= i)
-                line =xml.getColumns().get(i) + "\t" + "";
-            else if (xml.getColumns().size() <= i)
-                line = "" + "\t" + sql.getColumnNames(table).get(i);
-            else
-                line = xml.getColumns().get(i) + "\t" + sql.getColumnNames(table).get(i);
-            dos.writeUTF(line);
-        }
-    }
-
-    private List<Integer> editDatabase(String function, String[] parameters) throws SQLException {
-        List<Integer> fails = null;
-        for (int i = 0; i < parameters.length; i++) {
-            if (!StringUtils.isStrictlyNumeric(parameters[i])) {
-                fails.add(i);
-            } else {
-                switch (function)   {
-                    case "add":
-                        edit.addColumnToDatabase(Integer.parseInt(parameters[i]));
-                        break;
-                    case "del":
-                        edit.deleteColumn(Integer.parseInt(parameters[i]));
-                        break;
-                }
-            }
-        }
-        return fails;
     }
 
     private static String receiveCommand(DataInputStream dis) throws IOException {

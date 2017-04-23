@@ -16,10 +16,10 @@ public class Client {
             DataInputStream dis=new DataInputStream(sock.getInputStream());
             Scanner sc = new Scanner(System.in)
         ){
-            UI ui = new UI(sc);
+            UI ui = new UI(commands, sc);
 
             while (true) {
-                String command = ui.waitForCommand(commands);
+                String command = ui.waitForCommand();
                 sendCommand(command, dos);
 
                 switch (command) {
@@ -79,40 +79,10 @@ public class Client {
                         }
 
                         System.out.println(dis.readUTF());
-                        ui.receiveDataToEdit(dis);
 
-                        boolean inEdit = true;
-                        List<String> editCommands = Arrays.asList("close", "?", "add", "del", "merge");
-                        while (inEdit) {
-                            String editCommand = ui.waitForCommand(editCommands);
-                            String msg;
-                            sendCommand(editCommand, dos);
-                            switch (editCommand.substring(0, editCommand.indexOf(":"))) {
-                                case "close":
-                                    inEdit = false;
-                                    break;
-                                case "?":
-                                    for (String com : editCommands) {
-                                        System.out.println(com);
-                                    }
-                                    break;
-                                case "add":
-                                    msg = dis.readUTF();
-                                    System.out.println(msg);
-                                    if (dis.readInt() == 0)  {
-                                        ui.receiveDataToEdit(dis);
-                                    }
-                                    break;
-                                case "del":
-                                    msg = dis.readUTF();
-                                    System.out.println(msg);
-                                    if (dis.readInt() == 0)  {
-                                        ui.receiveDataToEdit(dis);
-                                    }
-                                    break;
-                            }
+                        //TODO uued käsud mida serverile saata. ui peaks salvestama ja kuvama serveri poolt saadetud sisu ja seda uuendama kui muutus õnnestus
 
-                        }
+                        break;
                     case "exit":
                         return;
                 }
