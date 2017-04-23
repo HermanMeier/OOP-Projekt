@@ -79,10 +79,9 @@ public class SQLWriter {
      */
     public List<String> getColumnNames(String table) throws SQLException {
         List<String> columns = new ArrayList<>();
-//        PreparedStatement ps = con.prepareStatement("SHOW COLUMNS FROM ?;");
-//        ps.setString(1, table);
-//        ResultSet rs = ps.executeQuery();
-        ResultSet rs = stmt.executeQuery("SHOW COLUMNS FROM " + table + ";");
+        PreparedStatement ps = con.prepareStatement("SHOW COLUMNS FROM ?;");
+        ps.setString(1, table);
+        ResultSet rs = ps.executeQuery();
         while (rs.next())   {
             columns.add(rs.getString(1));
         }

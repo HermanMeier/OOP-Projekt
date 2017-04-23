@@ -1,6 +1,5 @@
 package DBStuff;
 
-import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -8,7 +7,6 @@ import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,16 +35,9 @@ public class XMLhandler {
         //create document builder
         SAXBuilder saxBuilder = new SAXBuilder();
 
-        if (xmlFileName.startsWith("http://")||xmlFileName.startsWith("https://")){
-            File file=new File("TODO.txt");//TODO
-            FileUtils.copyURLToFile(new URL(xmlFileName), file);
-            xmlDocument= saxBuilder.build(file);
-        }
-        else{
-            File inputFile = new File(xmlFileName);
-            xmlDocument = saxBuilder.build(inputFile);
-        }
 
+        File inputFile = new File("xmlFiles\\"+xmlFileName);
+        xmlDocument = saxBuilder.build(inputFile);
         root = xmlDocument.getRootElement();
     }
 

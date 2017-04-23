@@ -1,25 +1,24 @@
 package server;
 
-import java.sql.SQLException;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class UI {
-    private final List<String> commands;
     private final Scanner input;
 
 
-    public UI(List<String> commands, Scanner input) {
-        this.commands = commands;
+    public UI(Scanner input) {
         this.input = input;
     }
 
-    public String waitForCommand()  {
+    public String waitForCommand(List<String> commands)  {
         System.out.print(">> ");
         while (input.hasNextLine())    {
             String com = input.nextLine();
-            if (commands.contains(com)) {
+            if (commands.contains(com) || commands.contains(com.substring(0, com.indexOf(":")))) {
                 return com;
             }
             else    {
@@ -46,7 +45,6 @@ public class UI {
         System.out.print("Host: ");
         DBinfo[3] = input.nextLine();
 
-        //See info tuleb saata serverile
         return DBinfo;
     }
 
@@ -64,27 +62,24 @@ public class UI {
                 System.out.print("Enter file with path: ");
                 XMLinfo[1] = input.nextLine();
                 break;
+            case "existing":
+
             default:
                 XMLinfo = null;
                 break;
         }
 
-        //See info tuleb saata serverile
         return XMLinfo;
     }
 
-    //Seda saab kasutada et vaadet refreshida pärast muutuste tegemist
-    private void printColumns(String table) throws SQLException {
-/*        System.out.println("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
-        for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()); i++) {
-            if (sql.getColumnNames(table).size() <= i)
-                System.out.println(xml.getColumns().get(i) + "\t" + "");
-            else if (xml.getColumns().size() <= i)
-                System.out.println("" + "\t" + sql.getColumnNames(table).get(i));
-            else
-                System.out.println(xml.getColumns().get(i) + "\t" + sql.getColumnNames(table).get(i));
+    public void receiveDataToEdit(DataInputStream dis) throws IOException {
+        System.out.println(dis.readUTF());
+        int numberOfLines = dis.readInt();
+
+        for (int i = 0; i < numberOfLines; i++) {
+            System.out.println(dis.readUTF());
         }
-        System.out.println();*/
+        System.out.println();
     }
 
     public String[] edit()  {
@@ -100,22 +95,5 @@ public class UI {
         info[2] = input.nextLine();
 
         return info;
-
-        /*if (xml == null || sql == null) {
-            System.out.println("XML file not opened or not connected to database.");
-            return;
-        }
-
-        System.out.println("Select table to edit.");
-        for (int i = 0; i < sql.getTableNames().size(); i++) {
-            System.out.println(i + "-" + sql.getTableNames().get(i));
-        }
-        String table;
-
-        System.out.print("Table number: ");
-        int index = input.nextInt();
-
-        printColumns(sql.getTableNames().get(index));*/
-
     }
 }

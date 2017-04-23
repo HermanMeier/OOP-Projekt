@@ -31,5 +31,12 @@
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
+        <dependency>
+            <groupId>OOP-Projekt</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.41</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/mysql-connector-java-5.1.41-bin.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

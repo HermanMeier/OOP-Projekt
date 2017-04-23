@@ -2,99 +2,167 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-/*
-Ühendab serveriga ja saadab kõigepealt faili ja seejärel
-hakkab saatma käske, millega server tegeleb
- */
-
 public class Client {
     private final static int BUFFER_SIZE=1024;
+    private final static List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit", "existingfiles");
 
     public static void main(String[] args) throws IOException {
-
-
         try(Socket sock = new Socket("localhost", 1337);
             DataOutputStream dos=new DataOutputStream(sock.getOutputStream());
-            DataInputStream dis=new DataInputStream(sock.getInputStream())
+            DataInputStream dis=new DataInputStream(sock.getInputStream());
+            Scanner sc = new Scanner(System.in)
         ){
-            List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit");
-            try (Scanner sc = new Scanner(System.in))   {
-                UI ui = new UI(commands, sc);
+            UI ui = new UI(sc);
 
-                while (true) {
-                    String command = ui.waitForCommand();
-                    if (command!=null){
-                        sendCommand(command, dos);
-                        if (!dis.readBoolean())  {
-                            System.out.println("Unknown command.");
+            while (true) {
+                String command = ui.waitForCommand(commands);
+                sendCommand(command, dos);
+
+                switch (command) {
+                    case "?":
+                        for (String com : commands) {
+                            System.out.println(com);
                         }
-                        else {
-                            switch (command) {
+                        break;
+                    case "db":
+                        String[] DBinfo = ui.selectDB();
+
+                        for (String s : DBinfo) {
+                            dos.writeUTF(s);
+                        }
+
+                        System.out.println(dis.readUTF());
+                        break;
+                    case "xml":
+                        String[] XMLinfo = ui.selectXML();
+
+                        if (XMLinfo == null)    {
+                            dos.writeUTF("");
+                            System.out.println("Invalid command.");
+                        }
+                        else if (XMLinfo[0].equals("http")){
+                            dos.writeUTF("sending URL");
+                            dos.writeUTF(XMLinfo[1]);
+                            System.out.println(dis.readUTF());
+                            break;
+                        }
+                        else if(XMLinfo[0].equals("file")){
+                            dos.writeUTF("file");
+                            File file = new File(XMLinfo[1]);
+
+                            if (file.exists() && XMLinfo[1].substring(XMLinfo[1].length()-4, XMLinfo[1].length()).equals(".xml"))  {
+                                //TODO faili saatmises on kuskil bug. Kui faili saadad siis server salvestab faili ales siis kui klient ennast sulgeb.
+                                dos.writeBoolean(true);
+                                sendFile(file, dos);
+                                System.out.println(dis.readUTF());
+                            }
+                            else    {
+                                dos.writeBoolean(false);
+                                System.out.println("No such xml file found.");
+                            }
+                        }
+                        break;
+                    case "edit":
+                        String[] info = ui.edit();
+
+                        for (String s : info) {
+                            dos.writeUTF(s);
+                        }
+
+                        if (!dis.readBoolean()) {
+                            System.out.println(dis.readUTF());
+                            break;
+                        }
+
+                        System.out.println(dis.readUTF());
+                        ui.receiveDataToEdit(dis);
+
+                        boolean inEdit = true;
+                        List<String> editCommands = Arrays.asList("close", "?", "add", "del", "merge");
+                        while (inEdit) {
+                            String editCommand = ui.waitForCommand(editCommands);
+                            String msg;
+                            sendCommand(editCommand, dos);
+                            switch (editCommand.substring(0, editCommand.indexOf(":"))) {
+                                case "close":
+                                    inEdit = false;
+                                    break;
                                 case "?":
-                                    for (String com : commands) {
+                                    for (String com : editCommands) {
                                         System.out.println(com);
                                     }
                                     break;
-                                case "db":
-                                    String[] DBinfo = ui.selectDB();
-
-                                    for (String s : DBinfo) {
-                                        dos.writeUTF(s);
+                                case "add":
+                                    msg = dis.readUTF();
+                                    System.out.println(msg);
+                                    if (dis.readInt() == 0) {
+                                        ui.receiveDataToEdit(dis);
                                     }
-
-                                    System.out.println(dis.readUTF());
                                     break;
-                                case "xml":
-                                    String[] XMLinfo = ui.selectXML();
-
-                                    if (XMLinfo == null)    {
-                                        dos.writeUTF("");
-                                        System.out.println("Unknown format or source.");
+                                case "del":
+                                    msg = dis.readUTF();
+                                    System.out.println(msg);
+                                    if (dis.readInt() == 0) {
+                                        ui.receiveDataToEdit(dis);
                                     }
-                                    else if (XMLinfo[0].equals("http")){
-                                        dos.writeUTF("sending URL");
-                                        dos.writeUTF(XMLinfo[1]);
-                                        break;
-                                    }
-                                    else if(XMLinfo[0].equals("file")){
-                                        sendFile(XMLinfo[1], dos);
-                                        break;
-                                    }
-
-                                    System.out.println(dis.readUTF());
                                     break;
-                                case "edit":
-                                    String[] info = ui.edit();
-
-                                    for (int i = 0; i < info.length; i++) {
-                                        dos.writeUTF(info[i]);
-                                    }
-
-                                    if (!dis.readBoolean()) {
-                                        System.out.println(dis.readUTF());
-                                        break;
-                                    }
-
-                                    System.out.println(dis.readUTF());
-
-                                    //TODO uued käsud mida serverile saata. ui peaks salvestama ja kuvama serveri poolt saadetud sisu ja seda uuendama kui muutus õnnestus
-
-                                    break;
-                                case "exit":
-                                    return;
                             }
                         }
-                    }
+
+                        break;
+                    case "existingfiles":
+                        int amount= dis.readInt();
+                        if (amount==0) {
+                                System.out.println("Server has no files");
+                                break;
+                            }
+                        System.out.println("Server has files: ");
+                        List<String> fileNames=new ArrayList<>();
+                        for (int i = 0; i < amount; i++) {
+                                String fileName=dis.readUTF();
+                                System.out.println(fileName);
+                                fileNames.add(fileName);
+                        }
+
+                        boolean running=true;
+                        while (running){
+                            System.out.println("Do you wish to use one of those files? (yes/no)");
+                            String answer=sc.nextLine();
+                                if (answer.equals("yes")){
+                                    dos.writeBoolean(true);
+                                    System.out.println("Which file would you like to use?");
+                                    while(true){
+                                        String filename=sc.nextLine();
+                                        if (fileNames.contains(filename)){
+                                            dos.writeUTF(filename);
+                                            break;
+                                        }
+                                        else {
+                                            System.out.println("No such file");
+                                        }
+                                    }
+                                    System.out.println(dis.readUTF());
+                                    running=false;
+                                }
+                                else if(answer.equals("no")){
+                                    dos.writeBoolean(false);
+                                    running =false;
+                                }
+                                else{
+                                    System.out.println("Incorrect input");
+                                }
+                            }
+
+                        break;
+                    case "exit":
+                        return;
                 }
             }
-        }
-
-        catch (Exception e){
-            System.out.println("Failed to connect to server");
         }
     }
 
@@ -109,15 +177,8 @@ public class Client {
         return true;
     }
 
-     private static boolean sendFile(String fileName, DataOutputStream dos){
-        File file= new File(fileName);
-        if (file.exists()) {
-            System.out.println("Given file does not exist.");
-            return false;
-        }
-
-        try(InputStream fis= new FileInputStream(file)){
-                dos.writeUTF("sending file");
+     private static boolean sendFile(File file, DataOutputStream dos){
+         try(InputStream fis= new FileInputStream(file)){
                 dos.writeUTF(file.getName());
                 dos.writeLong(file.length());
 

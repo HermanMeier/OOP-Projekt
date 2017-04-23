@@ -3,16 +3,10 @@ import server.UI;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
-
-/**
- * Sample database credentials:
- * User: xmltosql
- * Password: xmltosql
- * Database name: xmltosql
- * Database host: db4free.net
- */
-
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
 public class MainClass {
     public static void main(String[] args) throws JDOMException, IOException, SQLException {
@@ -20,6 +14,18 @@ public class MainClass {
         DBStuff.SQLWriter sql;
         List<String> dbTables;
         HashMap<String, List<String>> dbColumns = new HashMap<>();
+        /**
+         * Sample database credentials:
+         * User: xmltosql
+         * Password: xmltosql
+         * Database name: xmltosql
+         * Database host: db4free.net
+         */
+//        for (String dbTable : dbTables) {
+//            dbColumns.put(dbTable, sql.getColumnNames(dbTable));
+//        }
+
+
 
         try (Scanner sc = new Scanner(System.in))   {
             UI ui = new UI(commands, sc);
