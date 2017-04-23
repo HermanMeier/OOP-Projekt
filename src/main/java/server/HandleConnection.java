@@ -25,7 +25,8 @@ public class HandleConnection implements Runnable {
 
         try (DataInputStream dis = new DataInputStream(sock.getInputStream());
              DataOutputStream dos = new DataOutputStream(sock.getOutputStream())) {
-            while (true) {
+            boolean running =true;
+            while (running) {
                 String command = receiveCommand(dis);
 
                 switch (command) {
@@ -102,6 +103,7 @@ public class HandleConnection implements Runnable {
                         //TODO vaja see edit mode valmis teha, server peaks kasutama editDatabase klassi. xml ja ab sisu saatmiseks on osa koodi ui klassi commentis olemas
                         break;
                     case "exit":
+                        running=false;
                         break;
                 }
             }
