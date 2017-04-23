@@ -2,13 +2,14 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Client {
     private final static int BUFFER_SIZE=1024;
-    private final static List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit");
+    private final static List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit", "existingfiles");
 
     public static void main(String[] args) throws IOException {
         try(Socket sock = new Socket("localhost", 1337);
@@ -16,10 +17,10 @@ public class Client {
             DataInputStream dis=new DataInputStream(sock.getInputStream());
             Scanner sc = new Scanner(System.in)
         ){
-            UI ui = new UI(commands, sc);
+            UI ui = new UI(sc);
 
             while (true) {
-                String command = ui.waitForCommand();
+                String command = ui.waitForCommand(commands);
                 sendCommand(command, dos);
 
                 switch (command) {
@@ -79,8 +80,83 @@ public class Client {
                         }
 
                         System.out.println(dis.readUTF());
+                        ui.receiveDataToEdit(dis);
 
-                        //TODO uued käsud mida serverile saata. ui peaks salvestama ja kuvama serveri poolt saadetud sisu ja seda uuendama kui muutus õnnestus
+                        boolean inEdit = true;
+                        List<String> editCommands = Arrays.asList("close", "?", "add", "del", "merge");
+                        while (inEdit) {
+                            String editCommand = ui.waitForCommand(editCommands);
+                            String msg;
+                            sendCommand(editCommand, dos);
+                            switch (editCommand.substring(0, editCommand.indexOf(":"))) {
+                                case "close":
+                                    inEdit = false;
+                                    break;
+                                case "?":
+                                    for (String com : editCommands) {
+                                        System.out.println(com);
+                                    }
+                                    break;
+                                case "add":
+                                    msg = dis.readUTF();
+                                    System.out.println(msg);
+                                    if (dis.readInt() == 0) {
+                                        ui.receiveDataToEdit(dis);
+                                    }
+                                    break;
+                                case "del":
+                                    msg = dis.readUTF();
+                                    System.out.println(msg);
+                                    if (dis.readInt() == 0) {
+                                        ui.receiveDataToEdit(dis);
+                                    }
+                                    break;
+                            }
+                        }
+
+                        break;
+                    case "existingfiles":
+                        int amount= dis.readInt();
+                        if (amount==0) {
+                                System.out.println("Server has no files");
+                                break;
+                            }
+                        System.out.println("Server has files: ");
+                        List<String> fileNames=new ArrayList<>();
+                        for (int i = 0; i < amount; i++) {
+                                String fileName=dis.readUTF();
+                                System.out.println(fileName);
+                                fileNames.add(fileName);
+                        }
+
+                        boolean running=true;
+                        while (running){
+                            System.out.println("Do you wish to use one of those files? (yes/no)");
+                            String answer=sc.nextLine();
+                                if (answer.equals("yes")){
+                                    dos.writeBoolean(true);
+                                    System.out.println("Which file would you like to use?");
+                                    while(true){
+                                        String filename=sc.nextLine();
+                                        if (fileNames.contains(filename)){
+                                            dos.writeUTF(filename);
+                                            break;
+                                        }
+                                        else {
+                                            System.out.println("No such file");
+                                        }
+                                    }
+                                    System.out.println(dis.readUTF());
+                                    running=false;
+                                }
+                                else if(answer.equals("no")){
+                                    dos.writeBoolean(false);
+                                    running =false;
+                                }
+                                else{
+                                    System.out.println("Incorrect input");
+                                }
+                            }
 
                         break;
                     case "exit":

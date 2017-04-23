@@ -19,7 +19,6 @@ public class editDatabase {
         this.table = table;
     }
 
-
     public void addColumnToDatabase(int columnIndex) throws SQLException {
         String[] columnName = {xml.getColumnName(columnIndex)};
         String[] data = xml.getColumnData(columnName[0]).toArray( new String[0]);
