@@ -1,12 +1,10 @@
 import org.jdom2.JDOMException;
-import server.UI;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 
 public class MainClass {
     public static void main(String[] args) throws JDOMException, IOException, SQLException {
@@ -25,7 +23,7 @@ public class MainClass {
 //            dbColumns.put(dbTable, sql.getColumnNames(dbTable));
 //        }
 
-
+/*
 
         try (Scanner sc = new Scanner(System.in))   {
             UI ui = new UI(commands, sc);
@@ -56,12 +54,12 @@ public class MainClass {
                         ui.edit();
                         break;
                     case "exit":
-/*                        if (sql != null) {
+                        if (sql != null) {
                             sql.disconnect();
-                        }*/
+                        }
                         return;
                 }
             }
-        }
+        }*/
     }
 }

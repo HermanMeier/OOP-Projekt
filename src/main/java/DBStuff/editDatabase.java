@@ -19,10 +19,11 @@ public class editDatabase {
         this.table = table;
     }
 
+
     public void addColumnToDatabase(int columnIndex) throws SQLException {
-        String columnName = xml.getColumnName(columnIndex);
-        //List<String> data = xml.getColumnData(columnName);       //vt DBStuff.SQLWriter meetodit
-        //sql.insertIntoDB(table, columnName, data);
+        String[] columnName = {xml.getColumnName(columnIndex)};
+        String[] data = xml.getColumnData(columnName[0]).toArray( new String[0]);
+        sql.insertIntoDB(table, columnName, data);
     }
 
     public void deleteColumn(int columnIndex)   {

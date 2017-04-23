@@ -1,7 +1,5 @@
 package DBStuff;
 
-import com.sun.deploy.util.StringUtils;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +11,7 @@ public class SQLWriter {
     private String dbUser;
     private String dbPass;
     private String dbHost;
+    private String dbName;
     private Connection con;
     private Statement stmt;
 
@@ -26,6 +25,7 @@ public class SQLWriter {
     public SQLWriter(String dbUser, String dbPass, String dbName, String dbHost) {
         this.dbUser = dbUser;
         this.dbPass = dbPass;
+        this.dbName = dbName;
         this.dbHost = "jdbc:mysql://" + dbHost + ":3306/" + dbName;
     }
 
@@ -43,8 +43,8 @@ public class SQLWriter {
         this.con.close();
     }
 
-    public String getDbHost() {
-        return dbHost;
+    public String getDbName() {
+        return dbName;
     }
 
     /**
