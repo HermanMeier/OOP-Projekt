@@ -2,10 +2,12 @@ package server;
 
 import DBStuff.SQLWriter;
 import DBStuff.XMLhandler;
+import org.apache.commons.io.FileUtils;
 import org.jdom2.JDOMException;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URL;
 import java.sql.SQLException;
 
 public class HandleConnection implements Runnable {
@@ -54,6 +56,12 @@ public class HandleConnection implements Runnable {
                             } else
                                 break;
                         } else if (answer.equals("sending URL")) {
+                            String url=dis.readUTF();
+                            String filename=url.split("/")[url.split("/").length-1];
+                            file = new File(filename);
+
+                            FileUtils.copyURLToFile(new URL(url), file);
+                            dos.writeUTF("File received.");
                             //TODO convert URL to file
                         }
 
@@ -63,7 +71,7 @@ public class HandleConnection implements Runnable {
                                 xml.openXML();
                                 dos.writeUTF("Opened XML document.");
                             } catch (JDOMException e) {
-                                dos.writeUTF("Filed to open XML document. Invalid path or url.");
+                                dos.writeUTF("Failed to open XML document. Invalid path or url.");
                             }
                         }
 

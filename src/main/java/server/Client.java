@@ -42,7 +42,7 @@ public class Client {
 
                         if (XMLinfo == null)    {
                             dos.writeUTF("");
-                            System.out.println("Invaid command.");
+                            System.out.println("Invalid command.");
                         }
                         else if (XMLinfo[0].equals("http")){
                             dos.writeUTF("sending URL");
