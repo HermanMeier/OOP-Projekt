@@ -74,21 +74,29 @@ public class UI {
     }
 
     public void receiveDataToEdit(DataInputStream dis) throws IOException {
-        System.out.println(dis.readUTF());
-        int numberOfLines = dis.readInt();
+        String header = dis.readUTF();
+        String leftAlignFormat = "|%-4d|%-25s|%-25s|\n";
+        System.out.format("+----+-------------------------+-------------------------+\n");
+        System.out.format(leftAlignFormat, 0, header.split(";")[0],header.split(";")[1]);
+        System.out.format("+----+-------------------------+-------------------------+\n");
 
+        int numberOfLines = dis.readInt();
         for (int i = 0; i < numberOfLines; i++) {
-            System.out.println(dis.readUTF());
+            String line = dis.readUTF();
+            System.out.format(leftAlignFormat, i+1, line.split(";")[0], line.split(";")[1]);
         }
-        System.out.println();
+
+        System.out.format("+----+-------------------------+-------------------------+\n");
     }
 
-    public String[] edit()  {
+    public String[] edit(String tables)  {
         String[] info = new String[3];
 
         System.out.print("Enter db to edit: ");
         info[0] = input.nextLine();
 
+        System.out.println("Tables in database:");
+        System.out.println(tables);
         System.out.print("Enter db table to edit: ");
         info[1] = input.nextLine();
 

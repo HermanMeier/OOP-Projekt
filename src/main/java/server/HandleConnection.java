@@ -79,7 +79,25 @@ public class HandleConnection implements Runnable {
                         }
 
                         break;
+                    case "def":
+                        try {
+                            db = new SQLWriter("xmltosql","xmltosql","xmltosql","db4free.net");
+                            db.connectToDB();
+                            dos.writeUTF("Connected to database.");
+                        } catch (SQLException e) {
+                            dos.writeUTF("Failed to connect to database.");
+                        }
+
+                        try {
+                            xml = new XMLhandler("biginfo.xml");
+                            xml.openXML();
+                            dos.writeUTF("Opened XML document.");
+                        } catch (JDOMException e) {
+                            dos.writeUTF("Failed to open XML document. Invalid path or url.");
+                        }
+                        break;
                     case "edit":
+                        dos.writeUTF(db.getTableNames().toString());
                         String dbName = dis.readUTF();
                         String table = dis.readUTF();
                         String xmlName = dis.readUTF();
@@ -100,31 +118,34 @@ public class HandleConnection implements Runnable {
                             break;
                         }
                         dos.writeBoolean(true);
-                        dos.writeUTF("Now in edit mode. Type exit to close, ? for help. Work in progress, so expect bugs...");
+                        dos.writeUTF("Now in edit mode. Syntax <command>:<p1>;<p2>... . Type exit to close, ? for help. Work in progress, so expect bugs...");
 
                         sendDataToEdit(xml, db, table, dos);
-                        boolean inEdit = true;
-                        while (inEdit) {
-                            String editCommand = dis.readUTF();
-                            String function = editCommand.substring(0, editCommand.indexOf(":"));
-                            String[] parameters = editCommand.substring(editCommand.indexOf(":")).trim().split(",");
+                        while (true) {
+                            if (dis.readBoolean()) {
+                                String editCommand = dis.readUTF();
+                                if (editCommand.equals("close"))    {
+                                    break;
+                                }
+                                else if (!editCommand.equals("?") && editCommand.contains(";"))  {
+                                    String function = editCommand.substring(0, editCommand.indexOf(":"));
+                                    String[] parameters = editCommand.substring(editCommand.indexOf(":")).trim().split(";");
 
-                            if (function.equals("close")) {
-                                inEdit = false;
-                            } else if (function.equals("add") || function.equals("del")) {
-                                List<Integer> fails = editDatabase(function, parameters);
-                                if (function.equals("add"))
-                                    dos.writeUTF("Added " + (parameters.length - fails.size()) + " columns. Failed to add: " + fails.toString() + " .");
-                                else if (function.equals("del"))
-                                    dos.writeUTF("Deleted " + (parameters.length - fails.size()) + " columns. Failed to delete: " + fails.toString() + " .");
-                                    dos.writeInt(fails.size());
-                                if (fails.size() == 0)
-                                    sendDataToEdit(xml, db, table, dos);
+                                    if (function.equals("add") || function.equals("del")) {
+                                        List<Integer> fails = editDatabase(function, parameters);
+                                        if (function.equals("add"))
+                                            dos.writeUTF("Added " + (parameters.length - fails.size()) + " columns. Failed to add: " + fails.toString() + " .");
+                                        else if (function.equals("del"))
+                                            dos.writeUTF("Deleted " + (parameters.length - fails.size()) + " columns. Failed to delete: " + fails.toString() + " .");
+                                        sendDataToEdit(xml, db, table, dos);
+                                    }
+                                }
                             }
+
                         }
 
                         break;
-                    case "existingfiles":
+                    case "files":
                         List<String> fileNames=getExistingFiles();
                         dos.writeInt(fileNames.size());
                         for (String fileName : fileNames) {
@@ -152,22 +173,24 @@ public class HandleConnection implements Runnable {
         }
     }
 
-    private static void sendDataToEdit(XMLhandler xml, SQLWriter sql, String table, DataOutputStream dos) throws SQLException, IOException {
-        dos.writeUTF("XML: " + xml.getXmlFileName() + "\t" + "SQL table: " + table);
+    private void sendDataToEdit(XMLhandler xml, SQLWriter sql, String table, DataOutputStream dos) throws SQLException, IOException {
+        String header = xml.getXmlFileName() + ";" + table;
+        dos.writeUTF(header);
         dos.writeInt(Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()));
         for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()); i++) {
             String line;
             if (sql.getColumnNames(table).size() <= i)
-                    line =xml.getColumns().get(i) + "\t" + "";
+                    line = xml.getColumns().get(i) + "; ";
             else if (xml.getColumns().size() <= i)
-                    line = "" + "\t" + sql.getColumnNames(table).get(i);
+                    line = " ;" + sql.getColumnNames(table).get(i);
             else
-                line = xml.getColumns().get(i) + "\t" + sql.getColumnNames(table).get(i);
+                line = xml.getColumns().get(i) + ";" + sql.getColumnNames(table).get(i);
             dos.writeUTF(line);
         }
     }
 
      private List<Integer> editDatabase(String function, String[] parameters) throws SQLException {
+        //TODO test
         List<Integer> fails = null;
         for (int i = 0; i < parameters.length; i++) {
             if (!StringUtils.isStrictlyNumeric(parameters[i])) {

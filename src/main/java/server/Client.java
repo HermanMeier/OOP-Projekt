@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class Client {
     private final static int BUFFER_SIZE=1024;
-    private final static List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit", "existingfiles");
+    private final static List<String> commands = Arrays.asList("?", "db", "xml", "edit", "exit", "files","def");
 
     public static void main(String[] args) throws IOException {
         try(Socket sock = new Socket("localhost", 1337);
@@ -69,8 +69,14 @@ public class Client {
                             }
                         }
                         break;
+                    case "def":
+                        System.out.println("Loading default setup for testing...");
+                        System.out.println(dis.readUTF());
+                        System.out.println(dis.readUTF());
+                        break;
                     case "edit":
-                        String[] info = ui.edit();
+                        String tables = dis.readUTF();
+                        String[] info = ui.edit(tables);
 
                         for (String s : info) {
                             dos.writeUTF(s);
@@ -81,44 +87,47 @@ public class Client {
                             break;
                         }
 
+
                         System.out.println(dis.readUTF());
                         ui.receiveDataToEdit(dis);
 
-                        boolean inEdit = true;
-                        List<String> editCommands = Arrays.asList("close:", "?:", "add:", "del:", "merge:");
-                        while (inEdit) {
+                        List<String> editCommands = Arrays.asList("close", "?", "add", "del", "merge");
+                        while (true) {
                             String editCommand = ui.waitForCommand(editCommands);
-                            String msg;
-
-                            sendCommand(editCommand, dos);
-                            switch (editCommand.substring(0, editCommand.indexOf(":"))) {
-                                case "close":
-                                    inEdit = false;
-                                    break;
-                                case "?":
+                            if (!editCommand.contains(":") && !editCommand.equals("?") && !editCommand.equals("close")) {
+                                dos.writeBoolean(false);
+                                System.out.println("Syntax error in command, no \":\".");
+                            }
+                            else    {
+                                dos.writeBoolean(true);
+                                sendCommand(editCommand, dos);
+                                if (editCommand.equals("?"))    {
                                     for (String com : editCommands) {
                                         System.out.println(com);
                                     }
+                                }
+                                else if (editCommand.equals("close"))    {
                                     break;
-                                case "add":
-                                    msg = dis.readUTF();
-                                    System.out.println(msg);
-                                    if (dis.readInt() == 0) {
-                                        ui.receiveDataToEdit(dis);
+                                }
+                                //TODO pärast close muud asjad ei tööta, kuskil keegi ootab infot
+                                else if (editCommand.substring(0,editCommand.indexOf(":")).equals("add") || editCommand.substring(0,editCommand.indexOf(":")).equals("del")) {
+                                    switch (editCommand) {
+                                        case "add":
+                                            System.out.println(dis.readUTF());
+                                            ui.receiveDataToEdit(dis);
+                                            break;
+                                        case "del":
+                                            System.out.println(dis.readUTF());
+                                            ui.receiveDataToEdit(dis);
+                                            break;
                                     }
-                                    break;
-                                case "del":
-                                    msg = dis.readUTF();
-                                    System.out.println(msg);
-                                    if (dis.readInt() == 0) {
-                                        ui.receiveDataToEdit(dis);
-                                    }
-                                    break;
+                                }
                             }
                         }
 
                         break;
-                    case "existingfiles":
+                    case "files":
+                        //TODO küsimised printimised UI klassi meetodiks
                         int amount= dis.readInt();
                         if (amount==0) {
                                 System.out.println("Server has no files");
@@ -134,9 +143,9 @@ public class Client {
 
                         boolean running=true;
                         while (running){
-                            System.out.println("Do you wish to use one of those files? (yes/no)");
+                            System.out.println("Do you wish to use one of those files? (y/n)");
                             String answer=sc.nextLine();
-                                if (answer.equals("yes")){
+                                if (answer.equals("y")||answer.equals("yes")){
                                     dos.writeBoolean(true);
                                     System.out.println("Which file would you like to use?");
                                     while(true){
@@ -152,7 +161,7 @@ public class Client {
                                     System.out.println(dis.readUTF());
                                     running=false;
                                 }
-                                else if(answer.equals("no")){
+                                else if(answer.equals("no") || answer.equals("n")){
                                     dos.writeBoolean(false);
                                     running =false;
                                 }
