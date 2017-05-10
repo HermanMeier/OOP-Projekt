@@ -1,12 +1,10 @@
 package client;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
 
-public class UI {
+class UI {
     private final Scanner input;
 
 
@@ -30,7 +28,8 @@ public class UI {
         return null;
     }
 
-    public String[] selectDB()  {
+    //TODO pole kindel kas siit on enamus asju mõistlik maha võtta, nüüd saab ühe käsuga ja käsureaparameetritega ka
+    /*public String[] selectDB()  {
         String[] DBinfo = new String[4];
         System.out.println("Connect to database.");
 
@@ -104,5 +103,5 @@ public class UI {
         info[2] = input.nextLine();
 
         return info;
-    }
+    }*/
 }
