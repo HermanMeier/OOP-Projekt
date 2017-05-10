@@ -1,14 +1,14 @@
-package DBStuff;
+package Editor;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class editDatabase {
+public class Editor {
     private final XMLhandler xml;
-    private final SQLWriter sql;
+    private final DBhandler sql;
     private final String table;
 
-    public editDatabase(XMLhandler xml, SQLWriter sql, String table) {
+    public Editor(XMLhandler xml, DBhandler sql, String table) {
         this.xml = xml;
         this.sql = sql;
         this.table = table;

@@ -1,4 +1,4 @@
-package DBStuff;
+package Editor;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -147,8 +147,6 @@ public class XMLhandler {
 
     /**
      * Kustutab terve tulba, mitte ei tühejenda lahtreid
-     *
-     * @param column
      */
     public void delColumn(String column)    {
         for (Element element : root.getChildren()) {
@@ -159,8 +157,6 @@ public class XMLhandler {
     /**
      * Tühjendab ühe tabeli välja
      *
-     * @param column
-     * @param row
      */
     public void removeValueFrom(String column, int row)    {
         Element current = root.getChildren().get(row);
@@ -170,7 +166,6 @@ public class XMLhandler {
     /**
      * Kustutab ühe rea.
      *
-     * @param row
      */
     public void delRow(int row) {
         root.removeChild(root.getChildren().get(row).getName());

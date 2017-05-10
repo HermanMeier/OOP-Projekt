@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>groupid</groupId>
-    <artifactId>OOP-Projekt</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>projekt_v2</artifactId>
+    <version>1.0</version>
 
     <build>
         <plugins>
@@ -30,13 +30,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>OOP-Projekt</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.41</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/mysql-connector-java-5.1.41-bin.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

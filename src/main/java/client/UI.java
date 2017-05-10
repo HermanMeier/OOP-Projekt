@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -10,16 +10,16 @@ public class UI {
     private final Scanner input;
 
 
-    public UI(Scanner input) {
+    UI(Scanner input) {
         this.input = input;
     }
 
-    public String waitForCommand(List<String> commands)  {
+    String waitForCommand(List<String> commands)  {
         System.out.print(">> ");
         while (input.hasNextLine())    {
             String com = input.nextLine();
 
-            if (commands.contains(com)) {
+            if (commands.contains(com.split(" ")[0])) {
                 return com;
             }
             else    {

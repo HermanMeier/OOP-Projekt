@@ -1,13 +1,10 @@
-package DBStuff;
+package Editor;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Ove on 02.04.2017.
- */
-public class SQLWriter {
+public class DBhandler {
     private String dbUser;
     private String dbPass;
     private String dbHost;
@@ -22,7 +19,7 @@ public class SQLWriter {
      * @param dbHost    andmebaasi host [d54572.mysql.zonevs.eu]
      */
 
-    public SQLWriter(String dbUser, String dbPass, String dbName, String dbHost) {
+    public DBhandler(String dbUser, String dbPass, String dbName, String dbHost) {
         this.dbUser = dbUser;
         this.dbPass = dbPass;
         this.dbName = dbName;
