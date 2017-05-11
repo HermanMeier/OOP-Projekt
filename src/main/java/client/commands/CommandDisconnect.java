@@ -22,6 +22,6 @@ public class CommandDisconnect extends BaseCommand implements Command {
 
   @Override
   public void afterSend() throws IOException {
-    System.out.println("");
+    System.out.println(fromServer.readUTF());
   }
 }

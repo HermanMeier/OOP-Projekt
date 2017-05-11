@@ -17,7 +17,7 @@ public class CommandClose extends BaseCommand implements Command {
 
   @Override
   public void send() throws IOException {
-    sendCommand("close", args);
+    sendCommand("close", null);
   }
 
   @Override

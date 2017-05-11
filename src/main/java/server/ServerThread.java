@@ -3,6 +3,7 @@ package server;
 import editor.DBhandler;
 import editor.Editor;
 import editor.XMLhandler;
+import org.jdom2.JDOMException;
 
 import java.io.*;
 import java.net.Socket;
@@ -43,14 +44,18 @@ public class ServerThread implements Runnable {
         switch (command) {
           case "?":
             break;
-          case "saveFile":
-            //TODO debug, file sending freezes server and client
-            for (String argument : arguments) {
-              boolean done = saveFile(dis);
-              if (done) {
-                dos.writeUTF("File " + argument + " saved to server.");
-              } else {
-                dos.writeUTF("Failed to save file " + argument + ".");
+          case "sendFile":
+            if (arguments.size() == 0) {
+              dos.writeUTF("Wrong number of arguments.");
+            }
+            else {
+              for (String argument : arguments) {
+                boolean done = saveFile(dis);
+                if (done) {
+                  dos.writeUTF("File " + argument + " saved to server.");
+                } else {
+                  dos.writeUTF("Failed to save file " + argument + ".");
+                }
               }
             }
             break;
@@ -63,7 +68,6 @@ public class ServerThread implements Runnable {
             break;
           case "connect":
             //TODO debug
-            System.out.println(arguments.size());
             if (arguments.size()==4)  {
               db = new DBhandler(arguments.get(0), arguments.get(1), arguments.get(2), arguments.get(3));
               db.connectToDB();
@@ -73,8 +77,44 @@ public class ServerThread implements Runnable {
               dos.writeUTF("Wrong number of arguments.");
             break;
           case "url":
-            for (String argument : arguments) {
-              copyURLtoFile(argument);
+            if (arguments.size() == 0)  {
+              dos.writeUTF("Wrong number of arguments.");
+            }
+            else  {
+              for (String argument : arguments) {
+                copyURLtoFile(argument);
+                dos.writeUTF("File "+argument+" downloaded.");
+              }
+            }
+            break;
+          case "disconnect":
+            if (db == null) {
+              dos.writeUTF("Not connected to database.");
+            }
+            else if (db.getDbName().equals(arguments.get(0))) {
+              db = null;
+              dos.writeUTF("Disconnected from database.");
+            }
+            break;
+          case "open":
+            if (xml != null)  {
+              dos.writeUTF("Some XML file already opened.");
+            }
+            else if (getExistingFiles().contains(arguments.get(0))) {
+              xml = new XMLhandler(arguments.get(0));
+              xml.openXML();
+              dos.writeUTF("File opened.");
+            }
+            else
+              dos.writeUTF("No such file.");
+            break;
+          case "close":
+            if (xml == null) {
+              dos.writeUTF("No files open.");
+            }
+            else {
+              dos.writeUTF("File "+xml.getXmlFileName()+" closed.");
+              xml = null;
             }
             break;
           case "exit":
@@ -151,7 +191,7 @@ public class ServerThread implements Runnable {
                       break;
               }*/
       }
-    } catch (IOException | SQLException e) {
+    } catch (IOException | SQLException | JDOMException e) {
       e.printStackTrace();
     }
   }

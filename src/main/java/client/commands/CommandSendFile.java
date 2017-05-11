@@ -26,6 +26,7 @@ public class CommandSendFile extends BaseCommand implements Command {
 
   @Override
   public void afterSend() throws IOException {
+    //System.out.println(fromServer.readUTF());
     if (args != null) {
       for (int i = 0; i < args.size(); i++) {
         System.out.println(fromServer.readUTF());

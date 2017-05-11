@@ -58,6 +58,12 @@ public class BaseCommand {
         return new CommandConnectToDB(toServer, fromServer, args);
       case "url":
         return new CommandURL(toServer, fromServer, args);
+      case "close":
+        return new CommandClose(toServer, fromServer, args);
+      case "disconnect":
+        return new CommandDisconnect(toServer, fromServer, args);
+      case "open":
+        return new CommandOpen(toServer, fromServer, args);
       default:
         return null;
     }

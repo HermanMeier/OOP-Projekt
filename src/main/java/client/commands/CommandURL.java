@@ -22,6 +22,8 @@ public class CommandURL extends BaseCommand implements Command {
 
   @Override
   public void afterSend() throws IOException {
-
+    for (String arg : args) {
+      System.out.println(fromServer.readUTF());
+    }
   }
 }

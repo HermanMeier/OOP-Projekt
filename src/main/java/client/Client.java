@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Client {
-  private final static List<String> commands = Arrays.asList("?", "connect", "url", "sendFile", "edit", "exit", "files", "def");
+  private final static List<String> commands = Arrays.asList("?", "connect", "url", "sendFile", "edit", "exit",
+          "files", "open", "close", "disconnect", "def");
 
   public static void main(String[] args) throws IOException {
     try(Socket sock = new Socket("localhost", 1337);

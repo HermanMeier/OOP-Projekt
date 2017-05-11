@@ -13,10 +13,9 @@ public class CommandHelp extends BaseCommand implements Command {
 
   @Override
   public void beforeSend() {
+    System.out.println("Syntax: command <param1> <param2> ...");
     System.out.println("Valid commands:");
-    for (String command : this.commands) {
-      System.out.println(command);
-    }
+    commands.forEach(System.out::println);
   }
 
   @Override
