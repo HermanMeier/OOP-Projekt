@@ -1,8 +1,8 @@
 package server;
 
-import Editor.DBhandler;
-import Editor.Editor;
-import Editor.XMLhandler;
+import editor.DBhandler;
+import editor.Editor;
+import editor.XMLhandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,7 +10,6 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 //import com.mysql.jdbc.StringUtils;
 
 public class ServerThread implements Runnable {
