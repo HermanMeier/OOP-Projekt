@@ -12,7 +12,7 @@ public class CommandOpen extends BaseCommand implements Command {
 
   @Override
   public void beforeSend() {
-    System.out.println("Opening file...");
+    System.out.println("Opening file(s)...");
   }
 
   @Override

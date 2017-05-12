@@ -12,16 +12,18 @@ public class CommandClose extends BaseCommand implements Command {
 
   @Override
   public void beforeSend() {
-    System.out.println("Closing file...");
+    System.out.println("Closing file(s)...");
   }
 
   @Override
   public void send() throws IOException {
-    sendCommand("close", null);
+    sendCommand("close", args);
   }
 
   @Override
   public void afterSend() throws IOException {
-    System.out.println(fromServer.readUTF());
+    for (String arg : args) {
+      System.out.println(fromServer.readUTF());
+    }
   }
 }

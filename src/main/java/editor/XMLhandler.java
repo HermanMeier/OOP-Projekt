@@ -14,6 +14,7 @@ public class XMLhandler {
     private final String xmlFileName;
     private Document xmlDocument;
     private Element root;
+    private final List<String> words = new ArrayList<>();
 
     public XMLhandler(String xmlFileName) {
         this.xmlFileName = xmlFileName;
@@ -41,7 +42,15 @@ public class XMLhandler {
         root = xmlDocument.getRootElement();
     }
 
-    /**
+    public void saveWords() {
+      getColumns().forEach(words::add);
+    }
+
+    public boolean containsWord(String word)  {
+      return words.contains(word);
+    }
+
+  /**
      * Abimeetod meetodile printContent.
      *
      * @param parent    Element mis sisaldab mitut elementi
@@ -87,7 +96,7 @@ public class XMLhandler {
     /**
      * Leiab kõik unikaalsed tulpade pealkirjad.
      *
-     * @return      List kõikidest tupadest
+     * @return      List kõikide tulpae nimedest
      */
     public List<String> getColumns()    {
         List<String> columns = new ArrayList<>();

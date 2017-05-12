@@ -64,6 +64,8 @@ public class BaseCommand {
         return new CommandDisconnect(toServer, fromServer, args);
       case "open":
         return new CommandOpen(toServer, fromServer, args);
+      case"search":
+        return new CommandSearch(toServer, fromServer, args);
       default:
         return null;
     }

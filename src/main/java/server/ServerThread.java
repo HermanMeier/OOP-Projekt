@@ -10,15 +10,19 @@ import java.net.Socket;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-//import com.mysql.jdbc.StringUtils;
+import java.util.Map;
+
 
 public class ServerThread implements Runnable {
   private final Socket sock;
   private static final int BUFFER_SIZE=1024;
   private DBhandler db = null;
-  private XMLhandler xml = null;
+  private List<XMLhandler> xmlFiles = new ArrayList<>();
   private Editor edit = null;
+  private List<String> openedFileNames = new ArrayList<>();
+  private Map<String, XMLhandler> openedXMLfiles = new HashMap<>();
 
   ServerThread(Socket sock) {
       this.sock = sock;
@@ -43,6 +47,24 @@ public class ServerThread implements Runnable {
 
         switch (command) {
           case "?":
+            break;
+          case "search":
+            List<String> result = new ArrayList<>();
+            for (Map.Entry<String, XMLhandler> stringXMLhandlerEntry : openedXMLfiles.entrySet()) {
+              boolean containsAll = true;
+              for (String argument : arguments) {
+                if (!stringXMLhandlerEntry.getValue().containsWord(argument)) {
+                  containsAll = false;
+                  break;
+                }
+              }
+              if (containsAll)
+                result.add(stringXMLhandlerEntry.getKey());
+            }
+            dos.writeInt(result.size());
+            for (String s : result) {
+              dos.writeUTF(s);
+            }
             break;
           case "sendFile":
             if (arguments.size() == 0) {
@@ -97,24 +119,47 @@ public class ServerThread implements Runnable {
             }
             break;
           case "open":
-            if (xml != null)  {
-              dos.writeUTF("Some XML file already opened.");
-            }
-            else if (getExistingFiles().contains(arguments.get(0))) {
-              xml = new XMLhandler(arguments.get(0));
-              xml.openXML();
-              dos.writeUTF("File opened.");
-            }
-            else
-              dos.writeUTF("No such file.");
-            break;
-          case "close":
-            if (xml == null) {
-              dos.writeUTF("No files open.");
+            if (arguments.get(0).equals("*"))  {
+              for (String file : getExistingFiles()) {
+                if (file.endsWith(".xml") && !openedXMLfiles.containsKey(file))  {
+                  openedXMLfiles.put(file, new XMLhandler(file));
+                  openedXMLfiles.get(file).openXML();
+                  openedXMLfiles.get(file).saveWords();
+                }
+              }
+              dos.writeUTF("All files opened.");
             }
             else {
-              dos.writeUTF("File "+xml.getXmlFileName()+" closed.");
-              xml = null;
+              for (String argument : arguments) {
+                if (openedXMLfiles.containsKey(argument))  {
+                  dos.writeUTF("File already opened.");
+                }
+                else if (getExistingFiles().contains(argument)) {
+                  openedXMLfiles.put(argument, new XMLhandler(argument));
+                  openedXMLfiles.get(argument).openXML();
+                  openedXMLfiles.get(argument).saveWords();
+                  dos.writeUTF("File opened.");
+                }
+                else
+                  dos.writeUTF("No such file.");
+              }
+            }
+            break;
+          case "close":
+            if (arguments.get(0).equals("*")) {
+              openedXMLfiles.clear();
+              dos.writeUTF("All files closed.");
+            }
+            else {
+              for (String argument : arguments) {
+                if (!openedXMLfiles.containsKey(argument)) {
+                  dos.writeUTF("File "+argument+" not open.");
+                }
+                else {
+                  openedXMLfiles.remove(argument);
+                  dos.writeUTF("File "+argument+" closed.");
+                }
+              }
             }
             break;
           case "exit":
@@ -245,7 +290,7 @@ public class ServerThread implements Runnable {
   }
 
   private static void copyURLtoFile(String urlName) throws IOException {
-    String fileName=urlName.split("/")[urlName.split("/").length-1];
+    String fileName=urlName.split("/")[urlName.split("/").length-1]+".xml";
     URL url = new URL(urlName);
     File file = new File("xmlFiles\\"+fileName);
     try(InputStream in = url.openStream();
