@@ -42,7 +42,7 @@ public class ServerThread implements Runnable {
           }
         }
 
-
+        //TODO ServerThread vajab hädasti lihtsustamist
         switch (command) {
           case "?":
             break;
