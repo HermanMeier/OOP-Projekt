@@ -64,8 +64,12 @@ public class BaseCommand {
         return new CommandDisconnect(toServer, fromServer, args);
       case "open":
         return new CommandOpen(toServer, fromServer, args);
-      case"search":
+      case "search":
         return new CommandSearch(toServer, fromServer, args);
+      case "show":
+        return new CommandShow(toServer, fromServer, args);
+      case "rename":
+        return new CommandRename(toServer, fromServer, args);
       default:
         return null;
     }

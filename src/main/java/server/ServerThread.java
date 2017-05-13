@@ -1,13 +1,14 @@
 package server;
 
 import editor.DBhandler;
-import editor.Editor;
 import editor.XMLhandler;
 import org.jdom2.JDOMException;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,9 +20,6 @@ public class ServerThread implements Runnable {
   private final Socket sock;
   private static final int BUFFER_SIZE=1024;
   private DBhandler db = null;
-  private List<XMLhandler> xmlFiles = new ArrayList<>();
-  private Editor edit = null;
-  private List<String> openedFileNames = new ArrayList<>();
   private Map<String, XMLhandler> openedXMLfiles = new HashMap<>();
 
   ServerThread(Socket sock) {
@@ -47,6 +45,32 @@ public class ServerThread implements Runnable {
 
         switch (command) {
           case "?":
+            break;
+          case "rename":
+            if (arguments.size() != 2)  {
+              dos.writeUTF("Wrong number of arguments");
+            }
+            else if (openedXMLfiles.containsKey(arguments.get(0)))
+              dos.writeUTF("Close file before renaming");
+            else if (getExistingFiles().contains(arguments.get(0)))  {
+              Path oldPath = Paths.get("xmlFiles", arguments.get(0));
+              Path newPath = Paths.get("xmlFiles", arguments.get(1));
+              File old = new File(String.valueOf(oldPath));
+              File _new = new File(String.valueOf(newPath));
+              old.renameTo(_new);
+              dos.writeUTF("Renamed to "+arguments.get(1));
+            }
+            else  {
+              dos.writeUTF("No such file.");
+            }
+            break;
+          case "show":
+              for (String argument : arguments) {
+                if (openedXMLfiles.containsKey(argument)) {
+                  showXML(openedXMLfiles.get(argument), dos);
+                }
+                else dos.writeInt(-1);
+              }
             break;
           case "search":
             List<String> result = new ArrayList<>();
@@ -241,7 +265,18 @@ public class ServerThread implements Runnable {
     }
   }
 
-/*  private void sendDataToEdit(XMLhandler xml, DBhandler sql, String table, DataOutputStream dos) throws SQLException, IOException {
+  private void showXML(XMLhandler xml, DataOutputStream toClient) throws IOException {
+    if (xml.getColumns()==null) {
+      toClient.writeInt(0);
+    }
+    else
+      toClient.writeInt(xml.getColumns().size());
+    for (String c : xml.getColumns()) {
+      toClient.writeUTF(c);
+    }
+  }
+
+  private void sendDataToEdit(XMLhandler xml, DBhandler sql, String table, DataOutputStream dos) throws SQLException, IOException {
     String header = xml.getXmlFileName() + ";" + table;
     dos.writeUTF(header);
     dos.writeInt(Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()));
@@ -255,7 +290,7 @@ public class ServerThread implements Runnable {
         line = xml.getColumns().get(i) + ";" + sql.getColumnNames(table).get(i);
       dos.writeUTF(line);
     }
-  }*/
+  }
 
 /*   private List<Integer> editDatabase(String function, String[] parameters) throws SQLException {
       //TODO test
