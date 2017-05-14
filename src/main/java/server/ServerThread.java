@@ -44,7 +44,6 @@ public class ServerThread implements Runnable {
           }
         }
 
-        //TODO ServerThread vajab hädasti lihtsustamist
         switch (command) {
           case "?":
             break;
@@ -53,47 +52,16 @@ public class ServerThread implements Runnable {
             System.out.println("Logout at "+ LocalDateTime.now());
             break;
           case "signup":
-            if (arguments.size() != 2)  {
-              dos.writeUTF("Wrong number of arguments");
-            }
-            else if (accountManager.signUp(arguments.get(0), arguments.get(1)))  {
-              dos.writeUTF("Quest account created");
-            }
-            else  {
-              dos.writeUTF("Username taken");
-            }
+            handleSignup(dos, arguments);
             break;
           case "login":
-            if (arguments.size() != 2)  {
-              dos.writeUTF("Wrong number of arguments");
-            }
-            else if (accountManager.logIn(arguments.get(0), arguments.get(1)))  {
-              dos.writeUTF("Login successful");
-              dos.writeBoolean(arguments.get(0).equals("admin"));
-              accountManager.saveUsers();
-            }
-            else  {
-              dos.writeUTF("Failed to login");
-            }
+            handleLogin(dos, arguments);
             break;
+
           case "rename":
-            if (arguments.size() != 2)  {
-              dos.writeUTF("Wrong number of arguments");
-            }
-            else if (openedXMLfiles.containsKey(arguments.get(0)))
-              dos.writeUTF("Close file before renaming");
-            else if (getExistingFiles().contains(arguments.get(0)))  {
-              Path oldPath = Paths.get("xmlFiles", arguments.get(0));
-              Path newPath = Paths.get("xmlFiles", arguments.get(1));
-              File old = new File(String.valueOf(oldPath));
-              File _new = new File(String.valueOf(newPath));
-              old.renameTo(_new);
-              dos.writeUTF("Renamed to "+arguments.get(1));
-            }
-            else  {
-              dos.writeUTF("No such file.");
-            }
+            rename(dos, arguments);
             break;
+
           case "show":
             if (arguments.size()==0)  {
               dos.writeInt(-1);
@@ -105,39 +73,15 @@ public class ServerThread implements Runnable {
               else dos.writeInt(-1);
             }
             break;
+
           case "search":
-            List<String> result = new ArrayList<>();
-            for (Map.Entry<String, XMLhandler> stringXMLhandlerEntry : openedXMLfiles.entrySet()) {
-              boolean containsAll = true;
-              for (String argument : arguments) {
-                if (!stringXMLhandlerEntry.getValue().containsWord(argument)) {
-                  containsAll = false;
-                  break;
-                }
-              }
-              if (containsAll)
-                result.add(stringXMLhandlerEntry.getKey());
-            }
-            dos.writeInt(result.size());
-            for (String s : result) {
-              dos.writeUTF(s);
-            }
+            handleSearch(dos, arguments);
             break;
+
           case "sendFile":
-            if (arguments.size() == 0) {
-              dos.writeUTF("Wrong number of arguments.");
-            }
-            else {
-              for (String argument : arguments) {
-                boolean done = saveFile(dis);
-                if (done) {
-                  dos.writeUTF("File " + argument + " saved to server.");
-                } else {
-                  dos.writeUTF("Failed to save file " + argument + ".");
-                }
-              }
-            }
+            handleSendFile(dos, dis, arguments);
             break;
+
           case "files":
             List<String> fileNames = getExistingFiles();
             dos.writeInt(fileNames.size());
@@ -145,86 +89,27 @@ public class ServerThread implements Runnable {
               dos.writeUTF(fileName);
             }
             break;
+
           case "connect":
-            //TODO debug
-            if (arguments.size()==4)  {
-              db = new DBhandler(arguments.get(0), arguments.get(1), arguments.get(2), arguments.get(3));
-              db.connectToDB();
-              dos.writeUTF("Connected to database.");
-            }
-            else
-              dos.writeUTF("Wrong number of arguments.");
+            handleConnect(dos, arguments);
             break;
+
           case "url":
-            if (arguments.size() == 0)  {
-              dos.writeUTF("Wrong number of arguments.");
-            }
-            else  {
-              for (String argument : arguments) {
-                copyURLtoFile(argument);
-                dos.writeUTF("File "+argument+" downloaded.");
-              }
-            }
+            handleUrl(dos, arguments);
             break;
+
           case "disconnect":
-            if (db == null) {
-              dos.writeUTF("Not connected to database.");
-            }
-            else if (db.getDbName().equals(arguments.get(0))) {
-              db = null;
-              dos.writeUTF("Disconnected from database.");
-            }
+            handleDisconnect(dos, arguments);
             break;
+
           case "open":
-            if (arguments.size()==0)  {
-              dos.writeUTF("Wrong number of arguments");
-            }
-            else if (arguments.get(0).equals("*"))  {
-              for (String file : getExistingFiles()) {
-                if (file.endsWith(".xml") && !openedXMLfiles.containsKey(file))  {
-                  openedXMLfiles.put(file, new XMLhandler(file));
-                  openedXMLfiles.get(file).openXML();
-                  openedXMLfiles.get(file).saveWords();
-                }
-              }
-              dos.writeUTF("All files opened.");
-            }
-            else {
-              for (String argument : arguments) {
-                if (openedXMLfiles.containsKey(argument))  {
-                  dos.writeUTF("File already opened.");
-                }
-                else if (getExistingFiles().contains(argument)) {
-                  openedXMLfiles.put(argument, new XMLhandler(argument));
-                  openedXMLfiles.get(argument).openXML();
-                  openedXMLfiles.get(argument).saveWords();
-                  dos.writeUTF("File opened.");
-                }
-                else
-                  dos.writeUTF("No such file.");
-              }
-            }
+            handleOpen(dos, arguments);
             break;
+
           case "close":
-            if (arguments.size()==0)  {
-              dos.writeUTF("Wrong number of arguments");
-            }
-            else if (arguments.get(0).equals("*")) {
-              openedXMLfiles.clear();
-              dos.writeUTF("All files closed.");
-            }
-            else {
-              for (String argument : arguments) {
-                if (!openedXMLfiles.containsKey(argument)) {
-                  dos.writeUTF("File "+argument+" not open.");
-                }
-                else {
-                  openedXMLfiles.remove(argument);
-                  dos.writeUTF("File "+argument+" closed.");
-                }
-              }
-            }
+            handleClose(dos, arguments);
             break;
+
           case "exit":
             accountManager.saveUsers();
             running = false;
@@ -302,6 +187,170 @@ public class ServerThread implements Runnable {
       }
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+
+  private void handleLogin(DataOutputStream dos, List<String> arguments) throws Exception {
+      if (arguments.size() != 2)  {
+          dos.writeUTF("Wrong number of arguments");
+      }
+      else if (accountManager.logIn(arguments.get(0), arguments.get(1)))  {
+          dos.writeUTF("Login successful");
+          dos.writeBoolean(arguments.get(0).equals("admin"));
+          accountManager.saveUsers();
+      }
+      else  {
+          dos.writeUTF("Failed to login");
+      }
+  }
+
+  private void handleSignup(DataOutputStream dos, List<String> arguments) throws Exception {
+      if (arguments.size() != 2)  {
+          dos.writeUTF("Wrong number of arguments");
+      }
+      else if (accountManager.signUp(arguments.get(0), arguments.get(1)))  {
+          dos.writeUTF("Quest account created");
+      }
+      else  {
+          dos.writeUTF("Username taken");
+      }
+  }
+
+  private void handleClose(DataOutputStream dos, List<String> arguments) throws IOException {
+      if (arguments.size()==0)  {
+          dos.writeUTF("Wrong number of arguments");
+      }
+      else if (arguments.get(0).equals("*")) {
+          openedXMLfiles.clear();
+          dos.writeUTF("All files closed.");
+      }
+      else {
+          for (String argument : arguments) {
+              if (!openedXMLfiles.containsKey(argument)) {
+                  dos.writeUTF("File "+argument+" not open.");
+              }
+              else {
+                  openedXMLfiles.remove(argument);
+                  dos.writeUTF("File "+argument+" closed.");
+              }
+          }
+      }
+  }
+
+  private void handleOpen(DataOutputStream dos, List<String> arguments) throws Exception {
+      if (arguments.size()==0)  {
+          dos.writeUTF("Wrong number of arguments");
+      }
+      else if (arguments.get(0).equals("*"))  {
+          for (String file : getExistingFiles()) {
+              if (file.endsWith(".xml") && !openedXMLfiles.containsKey(file))  {
+                  openedXMLfiles.put(file, new XMLhandler(file));
+                  openedXMLfiles.get(file).openXML();
+                  openedXMLfiles.get(file).saveWords();
+              }
+          }
+          dos.writeUTF("All files opened.");
+      }
+      else {
+          for (String argument : arguments) {
+              if (openedXMLfiles.containsKey(argument))  {
+                  dos.writeUTF("File already opened.");
+              }
+              else if (getExistingFiles().contains(argument)) {
+                  openedXMLfiles.put(argument, new XMLhandler(argument));
+                  openedXMLfiles.get(argument).openXML();
+                  openedXMLfiles.get(argument).saveWords();
+                  dos.writeUTF("File opened.");
+              }
+              else
+                  dos.writeUTF("No such file.");
+          }
+      }
+  }
+
+  private void handleDisconnect(DataOutputStream dos, List<String> arguments) throws IOException {
+    if (db == null) {
+      dos.writeUTF("Not connected to database.");
+    }
+    else if (db.getDbName().equals(arguments.get(0))) {
+      db = null;
+      dos.writeUTF("Disconnected from database.");
+    }
+  }
+
+  private  void handleUrl(DataOutputStream dos, List<String> arguments) throws IOException {
+    if (arguments.size() == 0)  {
+      dos.writeUTF("Wrong number of arguments.");
+    }
+    else  {
+      for (String argument : arguments) {
+        copyURLtoFile(argument);
+        dos.writeUTF("File "+argument+" downloaded.");
+      }
+    }
+  }
+
+  private void handleConnect(DataOutputStream dos, List<String> arguments) throws SQLException, IOException {
+    if (arguments.size()==4)  {
+      db = new DBhandler(arguments.get(0), arguments.get(1), arguments.get(2), arguments.get(3));
+      db.connectToDB();
+      dos.writeUTF("Connected to database.");
+    }
+    else
+      dos.writeUTF("Wrong number of arguments.");
+  }
+
+  private void handleSendFile(DataOutputStream dos, DataInputStream dis, List<String> arguments) throws IOException {
+    if (arguments.size() == 0) {
+      dos.writeUTF("Wrong number of arguments.");
+    }
+    else {
+      for (String argument : arguments) {
+        boolean done = saveFile(dis);
+        if (done) {
+          dos.writeUTF("File " + argument + " saved to server.");
+        } else {
+          dos.writeUTF("Failed to save file " + argument + ".");
+        }
+      }
+    }
+  }
+
+  private void handleSearch(DataOutputStream dos, List<String> arguments) throws IOException {
+    List<String> result = new ArrayList<>();
+    for (Map.Entry<String, XMLhandler> stringXMLhandlerEntry : openedXMLfiles.entrySet()) {
+      boolean containsAll = true;
+      for (String argument : arguments) {
+        if (!stringXMLhandlerEntry.getValue().containsWord(argument)) {
+          containsAll = false;
+          break;
+        }
+      }
+      if (containsAll)
+        result.add(stringXMLhandlerEntry.getKey());
+    }
+    dos.writeInt(result.size());
+    for (String s : result) {
+      dos.writeUTF(s);
+    }
+  }
+
+  private void rename(DataOutputStream dos, List<String> arguments) throws IOException {
+    if (arguments.size() != 2)  {
+      dos.writeUTF("Wrong number of arguments");
+    }
+    else if (openedXMLfiles.containsKey(arguments.get(0)))
+      dos.writeUTF("Close file before renaming");
+    else if (getExistingFiles().contains(arguments.get(0)))  {
+      Path oldPath = Paths.get("xmlFiles", arguments.get(0));
+      Path newPath = Paths.get("xmlFiles", arguments.get(1));
+      File old = new File(String.valueOf(oldPath));
+      File _new = new File(String.valueOf(newPath));
+      old.renameTo(_new);
+      dos.writeUTF("Renamed to "+arguments.get(1));
+    }
+    else  {
+      dos.writeUTF("No such file.");
     }
   }
 
