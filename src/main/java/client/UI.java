@@ -1,6 +1,5 @@
 package client;
 
-import java.util.List;
 import java.util.Scanner;
 
 
@@ -11,31 +10,6 @@ class UI {
       this.input = input;
   }
 
-  String waitForCommand(List<String> commands)  {
-    System.out.print(">> ");
-    while (input.hasNextLine())    {
-      String com = input.nextLine();
-
-      if (commands.contains(com.split(" ")[0])) {
-        return com;
-      }
-      else  {
-        System.out.println("No such command. Try ? for help.");
-        System.out.print(">> ");
-      }
-    }
-    return null;
-  }
-
-
-
-
-
-
-
-
-
-    //TODO pole kindel kas siit on enamus asju mõistlik maha võtta, nüüd saab ühe käsuga ja käsureaparameetritega ka
     /*public String[] selectDB()  {
         String[] DBinfo = new String[4];
         System.out.println("Connect to database.");

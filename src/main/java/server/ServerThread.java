@@ -2,7 +2,6 @@ package server;
 
 import editor.DBhandler;
 import editor.XMLhandler;
-import org.jdom2.JDOMException;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +21,10 @@ public class ServerThread implements Runnable {
   private static final int BUFFER_SIZE=1024;
   private DBhandler db = null;
   private Map<String, XMLhandler> openedXMLfiles = new HashMap<>();
+  private final File users = new File(String.valueOf(Paths.get("src", "main", "resources", "users.dat")));
+  private final AccountManager accountManager = new AccountManager(users);
 
-  ServerThread(Socket sock) {
+  ServerThread(Socket sock) throws Exception {
       this.sock = sock;
   }
 
@@ -46,6 +48,34 @@ public class ServerThread implements Runnable {
         switch (command) {
           case "?":
             break;
+          case "logout":
+            accountManager.saveUsers();
+            System.out.println("Logout at "+ LocalDateTime.now());
+            break;
+          case "signup":
+            if (arguments.size() != 2)  {
+              dos.writeUTF("Wrong number of arguments");
+            }
+            else if (accountManager.signUp(arguments.get(0), arguments.get(1)))  {
+              dos.writeUTF("Quest account created");
+            }
+            else  {
+              dos.writeUTF("Username taken");
+            }
+            break;
+          case "login":
+            if (arguments.size() != 2)  {
+              dos.writeUTF("Wrong number of arguments");
+            }
+            else if (accountManager.logIn(arguments.get(0), arguments.get(1)))  {
+              dos.writeUTF("Login successful");
+              dos.writeBoolean(arguments.get(0).equals("admin"));
+              accountManager.saveUsers();
+            }
+            else  {
+              dos.writeUTF("Failed to login");
+            }
+            break;
           case "rename":
             if (arguments.size() != 2)  {
               dos.writeUTF("Wrong number of arguments");
@@ -65,12 +95,15 @@ public class ServerThread implements Runnable {
             }
             break;
           case "show":
-              for (String argument : arguments) {
-                if (openedXMLfiles.containsKey(argument)) {
-                  showXML(openedXMLfiles.get(argument), dos);
-                }
-                else dos.writeInt(-1);
+            if (arguments.size()==0)  {
+              dos.writeInt(-1);
+            }
+            for (String argument : arguments) {
+              if (openedXMLfiles.containsKey(argument)) {
+                showXML(openedXMLfiles.get(argument), dos);
               }
+              else dos.writeInt(-1);
+            }
             break;
           case "search":
             List<String> result = new ArrayList<>();
@@ -143,7 +176,10 @@ public class ServerThread implements Runnable {
             }
             break;
           case "open":
-            if (arguments.get(0).equals("*"))  {
+            if (arguments.size()==0)  {
+              dos.writeUTF("Wrong number of arguments");
+            }
+            else if (arguments.get(0).equals("*"))  {
               for (String file : getExistingFiles()) {
                 if (file.endsWith(".xml") && !openedXMLfiles.containsKey(file))  {
                   openedXMLfiles.put(file, new XMLhandler(file));
@@ -170,7 +206,10 @@ public class ServerThread implements Runnable {
             }
             break;
           case "close":
-            if (arguments.get(0).equals("*")) {
+            if (arguments.size()==0)  {
+              dos.writeUTF("Wrong number of arguments");
+            }
+            else if (arguments.get(0).equals("*")) {
               openedXMLfiles.clear();
               dos.writeUTF("All files closed.");
             }
@@ -187,6 +226,7 @@ public class ServerThread implements Runnable {
             }
             break;
           case "exit":
+            accountManager.saveUsers();
             running = false;
             break;
         }
@@ -260,7 +300,7 @@ public class ServerThread implements Runnable {
                       break;
               }*/
       }
-    } catch (IOException | SQLException | JDOMException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }

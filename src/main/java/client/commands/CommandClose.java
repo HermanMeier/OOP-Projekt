@@ -22,8 +22,13 @@ public class CommandClose extends BaseCommand implements Command {
 
   @Override
   public void afterSend() throws IOException {
-    for (String arg : args) {
+    if (args==null) {
       System.out.println(fromServer.readUTF());
+    }
+    else  {
+      for (String arg : args) {
+        System.out.println(fromServer.readUTF());
+      }
     }
   }
 }

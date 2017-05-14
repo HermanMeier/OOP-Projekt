@@ -41,7 +41,7 @@ public class BaseCommand {
 
   public Command createCommand(String commandString) {
     String[] input = commandString.split(" ");
-    if (input.length>1) {
+    if (input.length > 1) {
       args = new ArrayList<>(Arrays.asList(input));
       args.remove(0);
     }
@@ -70,6 +70,12 @@ public class BaseCommand {
         return new CommandShow(toServer, fromServer, args);
       case "rename":
         return new CommandRename(toServer, fromServer, args);
+      case "login":
+        return new CommandLogin(toServer, fromServer, args);
+      case "logout":
+        return new CommandLogout(toServer, fromServer, args);
+      case "signup":
+        return new CommandSignup(toServer, fromServer, args);
       default:
         return null;
     }

@@ -3,6 +3,7 @@ package client.commands;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class CommandShow extends BaseCommand implements Command{
@@ -22,6 +23,8 @@ public class CommandShow extends BaseCommand implements Command{
 
   @Override
   public void afterSend() throws IOException {
+    if (args==null)
+      args = Collections.singletonList("");
     for (String arg : args) {
       System.out.println("File "+arg);
       int numberOfColumns = fromServer.readInt();
@@ -33,7 +36,7 @@ public class CommandShow extends BaseCommand implements Command{
           System.out.println(fromServer.readUTF());
         }
         System.out.println();
-      }
+    }
     }
   }
 }
