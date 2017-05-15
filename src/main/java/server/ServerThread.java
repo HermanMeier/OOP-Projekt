@@ -169,6 +169,7 @@ public class ServerThread implements Runnable {
           }
           db.insertIntoDB(tableName, dbColumnNames, (String[])data.toArray());
       }
+      dos.writeUTF("Inserting successful");
   }
 
   private void handleLogin(DataOutputStream dos, List<String> arguments) throws Exception {
