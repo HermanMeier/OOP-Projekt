@@ -133,6 +133,44 @@ public class ServerThread implements Runnable {
     }
   }
 
+  private void handleInsert(DataOutputStream dos, List<String> arguments) throws IOException, SQLException {
+      //xmlfilename, table name, xmlColumnnames, dbColumnnames
+      if (!openedXMLfiles.containsKey(arguments.get(0))){
+          dos.writeUTF("No such xml file opened");
+          return;
+      }
+      
+      XMLhandler xml=openedXMLfiles.get(arguments.remove(0));
+      String tableName=arguments.remove(0);
+      List<String> xmlColumnNames=arguments.subList(0, arguments.size()/2);
+      String[] dbColumnNames=(String[])(arguments.subList(arguments.size()/2, arguments.size()).toArray());
+      
+      if (!db.getTableNames().contains(tableName)){
+          dos.writeUTF("No such table in database");
+          return;
+      }
+      for (String xmlColumnName : xmlColumnNames) {
+        if (!xml.getColumns().contains(xmlColumnName)){
+            dos.writeUTF("No such column in given xml file.");
+            return;}
+      }
+      List<String> existingColumns=db.getColumnNames(tableName);
+      for (String dbColumnName : dbColumnNames) {
+          if(!existingColumns.contains(dbColumnName)){
+              dos.writeUTF("No such column in given table");
+              return;
+          }
+      }
+
+      for (int i = 0; i < xml.getNumberOfRows(); i++) {
+          List<String> data=new ArrayList<>();
+          for (String xmlColumnName : xmlColumnNames) {
+              data.add(xml.getValue(xmlColumnName, i));
+          }
+          db.insertIntoDB(tableName, dbColumnNames, (String[])data.toArray());
+      }
+  }
+
   private void handleLogin(DataOutputStream dos, List<String> arguments) throws Exception {
       if (arguments.size() != 2)  {
           dos.writeUTF("Wrong number of arguments");
