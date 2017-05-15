@@ -3,6 +3,7 @@ package server;
 import editor.DBhandler;
 import editor.XMLhandler;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
 import java.net.URL;
@@ -102,6 +103,18 @@ public class ServerThread implements Runnable {
             handleDisconnect(dos, arguments);
             break;
 
+          case "showTables":
+            handleShowTables(dos, arguments);
+            break;
+
+          case "showAllTables":
+            handleShowAllTables(dos);
+            break;
+
+          case "createSampleTable":
+            handleCreateSampleTable(dos, arguments);
+            break;
+
           case "open":
             handleOpen(dos, arguments);
             break;
@@ -199,17 +212,50 @@ public class ServerThread implements Runnable {
       }
   }
 
-  private void handleDisconnect(DataOutputStream dos, List<String> arguments) throws IOException {
+  private void handleDisconnect(DataOutputStream dos, List<String> arguments) throws IOException, SQLException {
     if (db == null) {
       dos.writeUTF("Not connected to database.");
     }
     else if (db.getDbName().equals(arguments.get(0))) {
+      db.disconnect();
       db = null;
       dos.writeUTF("Disconnected from database.");
     }
   }
 
-  private  void handleUrl(DataOutputStream dos, List<String> arguments) throws IOException {
+    private void handleShowTables(DataOutputStream dos, List<String> arguments) throws IOException, SQLException {
+        if (arguments.size() == 0)  {
+            dos.writeUTF("You must specify a table name.");
+        } else if (db == null) {
+            dos.writeUTF("Not connected to database.");
+        } else {
+            for (String argument : arguments) {
+                List<String> columns = db.getColumnNames(argument);
+                dos.writeUTF("Table " + argument + " contains columns: " + String.join(", ", columns));
+            }
+        }
+    }
+
+    private void handleShowAllTables(DataOutputStream dos) throws IOException, SQLException {
+        if (db == null) {
+            dos.writeUTF("Not connected to database.");
+        } else {
+            List<String> tables = db.getTableNames();
+            dos.writeUTF(String.join(", ", tables));
+        }
+    }
+
+    private void handleCreateSampleTable(DataOutputStream dos, List<String> arguments) throws IOException, SQLException {
+      if (db == null) {
+          dos.writeUTF("Not connected to database.");
+      } else if (arguments.size() < 1) {
+          dos.writeUTF("Please specify a name for sample table!");
+      } else {
+          db.createSampleTable(arguments.get(0));
+          dos.writeUTF("Sample database " + arguments.get(0) + " created!");
+      }
+    }
+    private  void handleUrl(DataOutputStream dos, List<String> arguments) throws IOException {
     if (arguments.size() == 0)  {
       dos.writeUTF("Wrong number of arguments.");
     }

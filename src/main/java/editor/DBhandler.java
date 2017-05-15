@@ -23,7 +23,7 @@ public class DBhandler {
         this.dbUser = dbUser;
         this.dbPass = dbPass;
         this.dbName = dbName;
-        this.dbHost = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?autoReconnect=true&useSSL=false";
+        this.dbHost = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?jdbc:mysql://localhost/db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useBLegacyDatetimeCode=fBalse&serverTimezone=Europe/Moscow";
     }
 
     /**
@@ -82,6 +82,7 @@ public class DBhandler {
         ResultSet rs = stmt.executeQuery("SHOW COLUMNS FROM " + table + ";");
         while (rs.next())   {
             columns.add(rs.getString(1));
+            System.out.println(rs.getString(1));
         }
         return columns;
     }
@@ -100,8 +101,8 @@ public class DBhandler {
         return tables;
     }
 
-    public void createSampleTable() throws SQLException {
-        stmt.executeUpdate("CREATE TABLE trips (" +
+    public void createSampleTable(String table) throws SQLException {
+        stmt.executeUpdate("CREATE TABLE " + table + " (" +
                 "id int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL," +
                 "agency int(11) DEFAULT NULL," +
                 "country int(11) DEFAULT NULL," +

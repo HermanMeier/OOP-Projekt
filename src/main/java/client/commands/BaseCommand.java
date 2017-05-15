@@ -62,6 +62,12 @@ public class BaseCommand {
         return new CommandClose(toServer, fromServer, args);
       case "disconnect":
         return new CommandDisconnect(toServer, fromServer, args);
+      case "showTables":
+        return new CommandShowTables(toServer, fromServer, args);
+      case "showAllTables":
+        return new CommandShowAllTables(toServer, fromServer, args);
+      case "createSampleTable":
+        return new CommandCreateSampleTable(toServer, fromServer, args);
       case "open":
         return new CommandOpen(toServer, fromServer, args);
       case "search":

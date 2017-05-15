@@ -47,7 +47,8 @@ public class Client {
       if (args.length > 0)  {
         for (String arg : args) {
           List<String> commands = Arrays.asList("?", "connect", "url", "sendFile", "edit", "exit",
-                        "files", "open", "close", "disconnect", "search", "show", "rename", "def");
+                        "files", "open", "close", "disconnect", "search", "show", "rename", "def",
+                        "showTables", "showAllTables", "createSampleTable");
           String commandString = arg.replace(";", " ");
           Command command = new BaseCommand(commands,dos,dis).createCommand(commandString);
 
@@ -78,11 +79,13 @@ public class Client {
               if (dis.readBoolean()) {
                 //admin
                 setCommands(Arrays.asList("?", "connect", "url", "sendFile",
-                        "files", "open", "close", "disconnect", "search", "show", "rename", "logout"));
+                        "files", "open", "close", "disconnect", "search", "show", "rename", "logout",
+                        "showTables", "showAllTables", "createSampleTable"));
               } else {
                 //quest
                 setCommands(Arrays.asList("?", "url", "sendFile",
-                        "files", "open", "close", "search", "show", "logout"));
+                        "files", "open", "close", "search", "show", "logout", "showTables",
+                        "showAllTables"));
               }
             }
           }
