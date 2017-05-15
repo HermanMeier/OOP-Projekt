@@ -3,7 +3,6 @@ package server;
 import editor.DBhandler;
 import editor.XMLhandler;
 
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
 import java.net.URL;
@@ -393,7 +392,7 @@ public class ServerThread implements Runnable {
   private static void copyURLtoFile(String urlName) throws IOException {
     String fileName=urlName.split("/")[urlName.split("/").length-1]+".xml";
     URL url = new URL(urlName);
-    File file = new File("xmlFiles\\"+fileName);
+    File file = new File("xmlFiles"+File.separatorChar+fileName);
     try(InputStream in = url.openStream();
       FileOutputStream out = new FileOutputStream(file))  {
       byte[] buffer = new byte[1024];
@@ -410,7 +409,7 @@ public class ServerThread implements Runnable {
     long fileSize = fromClient.readLong();
 
     if (fileSize>0) {
-      File file = new File("xmlFiles\\"+fileName);
+      File file = new File("xmlFiles"+File.separatorChar+fileName);
       file.createNewFile();
       try (FileOutputStream fos = new FileOutputStream(file)) {
         byte[] buffer = new byte[BUFFER_SIZE];
