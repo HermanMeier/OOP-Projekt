@@ -24,7 +24,7 @@ class DBhandler {
         this.dbUser = dbUser;
         this.dbPass = dbPass;
         this.dbName = dbName;
-        this.dbHost = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?jdbc:mysql://localhost/db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useBLegacyDatetimeCode=fBalse&serverTimezone=Europe/Moscow";
+        this.dbHost = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useBLegacyDatetimeCode=fBalse&serverTimezone=Europe/Moscow";
         //TODO connect to sqlAnywhere database. need to add jConnect.jar to classPath
 
         //for sqlAnywhere
