@@ -432,6 +432,9 @@ public class ServerThread implements Runnable {
   private static void copyURLtoFile(String urlName) throws IOException {
     String fileName=urlName.split("/")[urlName.split("/").length-1]+".xml";
     URL url = new URL(urlName);
+    File dir=new File("xmlFiles");
+    if (!dir.exists()||!dir.isDirectory())
+          dir.mkdir();
     File file = new File("xmlFiles"+File.separatorChar+fileName);
     try(InputStream in = url.openStream();
       FileOutputStream out = new FileOutputStream(file))  {
@@ -449,6 +452,9 @@ public class ServerThread implements Runnable {
     long fileSize = fromClient.readLong();
 
     if (fileSize>0) {
+      File dir=new File("xmlFiles");
+      if (!dir.exists()||!dir.isDirectory())
+          dir.mkdir();
       File file = new File("xmlFiles"+File.separatorChar+fileName);
       file.createNewFile();
       try (FileOutputStream fos = new FileOutputStream(file)) {
