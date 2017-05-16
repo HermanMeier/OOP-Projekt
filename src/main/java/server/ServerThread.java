@@ -121,6 +121,9 @@ public class ServerThread implements Runnable {
           case "close":
             handleClose(dos, arguments);
             break;
+          case "insert":
+            handleInsert(dos, arguments);
+            break;
 
           case "exit":
             accountManager.saveUsers();
@@ -135,6 +138,10 @@ public class ServerThread implements Runnable {
 
   private void handleInsert(DataOutputStream dos, List<String> arguments) throws IOException, SQLException {
       //xmlfilename, table name, xmlColumnnames, dbColumnnames
+      if (arguments.size()<4||arguments.size()%2!=0){
+          dos.writeUTF("Invalid amount of arguments, correct syntax is xmlfilename, tablename, xmlcolumnnames, dbcolumnnames");
+      }
+
       if (!openedXMLfiles.containsKey(arguments.get(0))){
           dos.writeUTF("No such xml file opened");
           return;

@@ -82,6 +82,8 @@ public class BaseCommand {
         return new CommandLogout(toServer, fromServer, args);
       case "signup":
         return new CommandSignup(toServer, fromServer, args);
+      case "insert":
+        return new CommandInsert(toServer, fromServer, args);
       default:
         return null;
     }
