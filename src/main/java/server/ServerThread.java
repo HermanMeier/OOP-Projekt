@@ -1,8 +1,5 @@
 package server;
 
-import editor.DBhandler;
-import editor.XMLhandler;
-
 import java.io.*;
 import java.net.Socket;
 import java.net.URL;
@@ -124,7 +121,9 @@ public class ServerThread implements Runnable {
           case "insert":
             handleInsert(dos, arguments);
             break;
-
+          case "delete":
+            handleDelete(dos, arguments);
+            break;
           case "exit":
             accountManager.saveUsers();
             running = false;
@@ -136,13 +135,36 @@ public class ServerThread implements Runnable {
     }
   }
 
+  private void handleDelete(DataOutputStream toClient, List<String> arguments) throws IOException {
+    if (arguments!= null && arguments.size()>0) {
+      for (String argument : arguments) {
+        if (getExistingFiles().contains(argument)) {
+          File fileToDelete = new File("xmlFiles"+File.separatorChar+argument);
+          if (fileToDelete.delete())  {
+            toClient.writeUTF("File "+argument+" deleted");
+            openedXMLfiles.remove(argument);
+          }
+          else  {
+            toClient.writeUTF("Failed to delete file "+argument);
+          }
+        }
+        else {
+          toClient.writeUTF("No such file "+argument);
+        }
+      }
+    }
+    else  {
+      toClient.writeUTF("Wrong number of arguments");
+    }
+  }
+
   private void handleInsert(DataOutputStream dos, List<String> arguments) throws IOException, SQLException {
       //xmlfilename, table name, xmlColumnnames, dbColumnnames
-      if (arguments.size()<4||arguments.size()%2!=0){
+      if (arguments.size()<4 || arguments.size()%2!=0){
           dos.writeUTF("Invalid amount of arguments, correct syntax is xmlfilename, tablename, xmlcolumnnames, dbcolumnnames");
       }
 
-      if (!openedXMLfiles.containsKey(arguments.get(0))){
+      if (openedXMLfiles.isEmpty() || !openedXMLfiles.containsKey(arguments.get(0))){
           dos.writeUTF("No such xml file opened");
           return;
       }
@@ -150,7 +172,7 @@ public class ServerThread implements Runnable {
       XMLhandler xml=openedXMLfiles.get(arguments.remove(0));
       String tableName=arguments.remove(0);
       List<String> xmlColumnNames=arguments.subList(0, arguments.size()/2);
-      String[] dbColumnNames=(String[])(arguments.subList(arguments.size()/2, arguments.size()).toArray());
+      String[] dbColumnNames = arguments.subList(arguments.size()/2, arguments.size()).toArray(new String[0]);
       
       if (!db.getTableNames().contains(tableName)){
           dos.writeUTF("No such table in database");
@@ -174,7 +196,7 @@ public class ServerThread implements Runnable {
           for (String xmlColumnName : xmlColumnNames) {
               data.add(xml.getValue(xmlColumnName, i));
           }
-          db.insertIntoDB(tableName, dbColumnNames, (String[])data.toArray());
+          db.insertIntoDB(tableName, dbColumnNames, data.toArray(new String[0]));
       }
       dos.writeUTF("Inserting successful");
   }
@@ -198,7 +220,7 @@ public class ServerThread implements Runnable {
           dos.writeUTF("Wrong number of arguments");
       }
       else if (accountManager.signUp(arguments.get(0), arguments.get(1)))  {
-          dos.writeUTF("Quest account created");
+          dos.writeUTF("Guest account created");
       }
       else  {
           dos.writeUTF("Username taken");
@@ -338,19 +360,27 @@ public class ServerThread implements Runnable {
     }
   }
 
-  private void handleSearch(DataOutputStream dos, List<String> arguments) throws IOException {
+  private void handleSearch(DataOutputStream dos, List<String> arguments) throws IOException, SQLException {
     List<String> result = new ArrayList<>();
-    for (Map.Entry<String, XMLhandler> stringXMLhandlerEntry : openedXMLfiles.entrySet()) {
-      boolean containsAll = true;
-      for (String argument : arguments) {
-        if (!stringXMLhandlerEntry.getValue().containsWord(argument)) {
-          containsAll = false;
-          break;
+
+    for (String argument : arguments) {
+      for (Map.Entry<String, XMLhandler> entry : openedXMLfiles.entrySet()) {
+        if (entry.getValue().containsWord(argument)) {
+          result.add(entry.getKey());
         }
       }
-      if (containsAll)
-        result.add(stringXMLhandlerEntry.getKey());
+
+      if (db!=null) {
+        for (String table : db.getTableNames()) {
+          for (String column : db.getColumnNames(table)) {
+            if (column.contains(argument))  {
+              result.add(table+"->"+column);
+            }
+          }
+        }
+      }
     }
+
     dos.writeInt(result.size());
     for (String s : result) {
       dos.writeUTF(s);
@@ -386,42 +416,6 @@ public class ServerThread implements Runnable {
       toClient.writeUTF(c);
     }
   }
-
-  private void sendDataToEdit(XMLhandler xml, DBhandler sql, String table, DataOutputStream dos) throws SQLException, IOException {
-    String header = xml.getXmlFileName() + ";" + table;
-    dos.writeUTF(header);
-    dos.writeInt(Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()));
-    for (int i = 0; i < Math.max(xml.getColumns().size(), sql.getColumnNames(table).size()); i++) {
-      String line;
-      if (sql.getColumnNames(table).size() <= i)
-        line = xml.getColumns().get(i) + "; ";
-      else if (xml.getColumns().size() <= i)
-        line = " ;" + sql.getColumnNames(table).get(i);
-      else
-        line = xml.getColumns().get(i) + ";" + sql.getColumnNames(table).get(i);
-      dos.writeUTF(line);
-    }
-  }
-
-/*   private List<Integer> editDatabase(String function, String[] parameters) throws SQLException {
-      //TODO test
-      List<Integer> fails = null;
-      for (int i = 0; i < parameters.length; i++) {
-        if (!StringUtils.isStrictlyNumeric(parameters[i])) {
-          fails.add(i);
-          } else {
-            switch (function)   {
-              case "add":
-                edit.addColumnToDatabase(Integer.parseInt(parameters[i]));
-                break;
-              case "del":
-                edit.deleteColumn(Integer.parseInt(parameters[i]));
-                break;
-            }
-          }
-        }
-     return fails;
-  }*/
 
   private static List<String> getExistingFiles(){
     File directory=new File("xmlFiles");

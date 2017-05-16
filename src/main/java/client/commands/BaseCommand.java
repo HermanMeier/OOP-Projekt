@@ -84,6 +84,8 @@ public class BaseCommand {
         return new CommandSignup(toServer, fromServer, args);
       case "insert":
         return new CommandInsert(toServer, fromServer, args);
+      case "delete":
+        return new CommandDelete(toServer, fromServer, args);
       default:
         return null;
     }

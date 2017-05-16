@@ -5,9 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Created by Ove on 15.05.2017.
- */
 public class CommandShowTables extends BaseCommand implements Command {
     CommandShowTables(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
         super(toServer, fromServer, args);

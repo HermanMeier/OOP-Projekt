@@ -26,7 +26,7 @@ public class CommandSearch extends BaseCommand implements Command {
     if (numberOfResults==0)
       System.out.println("No results");
     else
-      System.out.println("Matching files on server:");
+      System.out.println("Matching words in xml files or database:");
     for (int i = 0; i < numberOfResults; i++) {
       System.out.println(fromServer.readUTF());
     }

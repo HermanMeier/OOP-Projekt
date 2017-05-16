@@ -1,4 +1,4 @@
-package editor;
+package server;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -16,7 +16,7 @@ public class XMLhandler {
     private Element root;
     private final List<String> words = new ArrayList<>();
 
-    public XMLhandler(String xmlFileName) {
+    XMLhandler(String xmlFileName) {
         this.xmlFileName = xmlFileName;
     }
 
@@ -32,7 +32,7 @@ public class XMLhandler {
      * @throws JDOMException
      * @throws IOException
      */
-    public void openXML() throws JDOMException, IOException {
+    void openXML() throws JDOMException, IOException {
         //create document builder
         SAXBuilder saxBuilder = new SAXBuilder();
 
@@ -42,11 +42,11 @@ public class XMLhandler {
         root = xmlDocument.getRootElement();
     }
 
-    public void saveWords() {
+    void saveWords() {
       getColumns().forEach(words::add);
     }
 
-    public boolean containsWord(String word)  {
+    boolean containsWord(String word)  {
       return words.contains(word);
     }
 
@@ -98,7 +98,7 @@ public class XMLhandler {
      *
      * @return      List kõikide tulpae nimedest
      */
-    public List<String> getColumns()    {
+    List<String> getColumns()    {
         List<String> columns = new ArrayList<>();
 
         for (Element child : root.getChildren()) {
@@ -115,7 +115,7 @@ public class XMLhandler {
     /**
      * @return      Tagastab ridade arvu.
      */
-    public int getNumberOfRows()   {
+    int getNumberOfRows()   {
         return root.getChildren().size();
     }
 
@@ -149,7 +149,7 @@ public class XMLhandler {
      * @param column    Milline tulp(kasuta getColumns() tagastatud väärtusi)
      * @param row       Mitmes rida
      */
-    public String getValue(String column, int row)  {
+    String getValue(String column, int row)  {
         Element current = root.getChildren().get(row);
         return current.getChild(column).getText();
     }

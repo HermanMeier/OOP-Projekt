@@ -5,9 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Created by Villem on 16/05/2017.
- */
 public class CommandInsert extends BaseCommand implements Command {
     CommandInsert(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
         super(toServer, fromServer, args);

@@ -45,10 +45,11 @@ public class Client {
       Scanner sc = new Scanner(System.in)
     ){
       if (args.length > 0)  {
+        //program arguments for testing
         for (String arg : args) {
           List<String> commands = Arrays.asList("?", "connect", "url", "sendFile", "edit", "exit",
                         "files", "open", "close", "disconnect", "search", "show", "rename", "def",
-                        "showTables", "showAllTables", "createSampleTable", "insert");
+                        "showTables", "showAllTables", "createSampleTable", "insert", "delete");
           String commandString = arg.replace(";", " ");
           Command command = new BaseCommand(commands,dos,dis).createCommand(commandString);
 
@@ -80,7 +81,7 @@ public class Client {
                 //admin
                 setCommands(Arrays.asList("?", "connect", "url", "sendFile",
                         "files", "open", "close", "disconnect", "search", "show", "rename", "logout",
-                        "showTables", "showAllTables", "createSampleTable", "insert"));
+                        "showTables", "showAllTables", "createSampleTable", "insert", "delete"));
               } else {
                 //guest
                 setCommands(Arrays.asList("?", "url", "sendFile",

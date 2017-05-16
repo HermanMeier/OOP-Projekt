@@ -1,14 +1,15 @@
-package editor;
+package server;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBhandler {
+class DBhandler {
     private String dbUser;
     private String dbPass;
     private String dbHost;
     private String dbName;
+    //private String connectionString;
     private Connection con;
     private Statement stmt;
 
@@ -19,28 +20,40 @@ public class DBhandler {
      * @param dbHost    andmebaasi host [d54572.mysql.zonevs.eu]
      */
 
-    public DBhandler(String dbUser, String dbPass, String dbName, String dbHost) {
+    DBhandler(String dbUser, String dbPass, String dbName, String dbHost) {
         this.dbUser = dbUser;
         this.dbPass = dbPass;
         this.dbName = dbName;
         this.dbHost = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?jdbc:mysql://localhost/db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useBLegacyDatetimeCode=fBalse&serverTimezone=Europe/Moscow";
+        //TODO connect to sqlAnywhere database. need to add jConnect.jar to classPath
+
+        //for sqlAnywhere
+        /*this.dbUser = dbUser;
+        this.dbPass = dbPass;
+        this.dbName = dbName;
+        this.dbHost = dbHost;
+        this.connectionString = "jdbc:sqlanywhere:uid="+dbUser+";pwd="+dbPass+";eng="+dbName+";database=edu;links=tcpip(host="+dbHost+")";*/
     }
 
     /**
      * Loob ühenduse andmebaasiga
      */
-    public void connectToDB() throws SQLException {
+    void connectToDB() throws SQLException {
         this.con = DriverManager.getConnection(dbHost, dbUser, dbPass);
         this.stmt = con.createStatement();
+
+        //for sqlAnywhere
+        /*this.con = DriverManager.getConnection(connectionString);
+        this.stmt = con.createStatement();*/
     }
     /**
      * Lõpetab ühenduse andmebaasiga
      */
-    public void disconnect() throws SQLException {
+    void disconnect() throws SQLException {
         this.con.close();
     }
 
-    public String getDbName() {
+    String getDbName() {
         return dbName;
     }
 
@@ -50,7 +63,7 @@ public class DBhandler {
      * @param columns   tabeli veerud String[]
      * @param data      tabeli sisu String[]
      */
-    public void insertIntoDB(String table, String[] columns, String[] data) throws SQLException {
+    void insertIntoDB(String table, String[] columns, String[] data) throws SQLException {
         StringBuilder sb = new StringBuilder();
         for (String c : columns) {
             sb.append(", ").append(c);
@@ -61,10 +74,13 @@ public class DBhandler {
             sb.append(", ").append(d);
         }
         String values = sb.substring(2);
+        //System.out.println(cols);
+        //System.out.println(values);
         PreparedStatement ps = con.prepareStatement("INSERT INTO ? ( ? ) VALUES ( ? );");
         ps.setString(1, table);
         ps.setString(2, cols);
         ps.setString(3, values);
+        System.out.println(ps.toString());
         ps.executeUpdate();
     }
 
@@ -74,7 +90,7 @@ public class DBhandler {
      * @return          List<String> objekt tabeli tulpadega
      * @throws SQLException
      */
-    public List<String> getColumnNames(String table) throws SQLException {
+    List<String> getColumnNames(String table) throws SQLException {
         List<String> columns = new ArrayList<>();
 //        PreparedStatement ps = con.prepareStatement("SHOW COLUMNS FROM ?;");
 //        ps.setString(1, table);
@@ -82,7 +98,7 @@ public class DBhandler {
         ResultSet rs = stmt.executeQuery("SHOW COLUMNS FROM " + table + ";");
         while (rs.next())   {
             columns.add(rs.getString(1));
-            System.out.println(rs.getString(1));
+            //System.out.println(rs.getString(1));
         }
         return columns;
     }
@@ -92,7 +108,7 @@ public class DBhandler {
      * @return          List<String> objekt tabelite nimetustega
      * @throws SQLException
      */
-    public List<String> getTableNames() throws SQLException {
+    List<String> getTableNames() throws SQLException {
         List<String> tables = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SHOW TABLES;");
         while (rs.next()) {
@@ -101,7 +117,7 @@ public class DBhandler {
         return tables;
     }
 
-    public void createSampleTable(String table) throws SQLException {
+    void createSampleTable(String table) throws SQLException {
         stmt.executeUpdate("CREATE TABLE " + table + " (" +
                 "id int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL," +
                 "agency int(11) DEFAULT NULL," +
