@@ -128,4 +128,5 @@ class DBhandler {
                 "hotel_url varchar(255) DEFAULT NULL" +
                 ");");
     }
+
 }

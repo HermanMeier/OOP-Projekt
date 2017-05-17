@@ -183,22 +183,17 @@ public class XMLhandler {
     public String dataTypeofColumn(String columnname, List<String> columnData){
         boolean possibleInt=true;
         boolean possibleDouble=true;
-        boolean possibleBoolean=true;
         int maxlength=0;
 
         for (String data : columnData) {
             maxlength=Integer.max(maxlength, data.length());
             if (possibleInt){
-                if(isInt(data))
+                if(!isInt(data))
                     possibleInt=false;
             }
             if(possibleDouble){
-                if(isDouble(data))
+                if(!isDouble(data))
                     possibleDouble=false;
-            }
-            if(possibleBoolean){
-                if(isBoolean(data))
-                    possibleBoolean=false;
             }
         }
 
