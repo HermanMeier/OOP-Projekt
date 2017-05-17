@@ -104,7 +104,7 @@ public class BaseCommand {
       case "show":
         return new CommandShow(toServer, fromServer, command, args, "Reading xml file...");
       case "rename":
-        return new CommandRename(toServer, fromServer, command, args, "Renameing file...");
+        return new CommandRename(toServer, fromServer, command, args, "Renaming file...");
       case "login":
         return new CommandLogin(toServer, fromServer, command, args, "Logging in...");
       case "logout":

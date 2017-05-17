@@ -208,11 +208,6 @@ public class XMLhandler {
         return "VARCHAR(255)";
     }
 
-    private boolean isBoolean(String value){
-        if (value.toLowerCase().equals("true")||value.toLowerCase().equals("false"))
-            return true;
-        return false;
-    }
 
     private boolean isInt(String value){
         try{

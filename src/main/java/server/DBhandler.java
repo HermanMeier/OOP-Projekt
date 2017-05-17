@@ -14,10 +14,10 @@ class DBhandler {
     private Statement stmt;
 
     /**
-     * @param dbUser    andmebaasi kasutajanimi [d54572_xmldata]
-     * @param dbPass    kasutaja parool [Xmldata1]
-     * @param dbName    andmebaasi nimi [d54572_xmldata]
-     * @param dbHost    andmebaasi host [d54572.mysql.zonevs.eu]
+     * @param dbUser    database username [d54572_xmldata]
+     * @param dbPass    password for user [Xmldata1]
+     * @param dbName    database name [d54572_xmldata]
+     * @param dbHost    database host [d54572.mysql.zonevs.eu]
      */
 
     DBhandler(String dbUser, String dbPass, String dbName, String dbHost) {
@@ -25,7 +25,6 @@ class DBhandler {
         this.dbPass = dbPass;
         this.dbName = dbName;
         this.connectionString = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useBLegacyDatetimeCode=fBalse&serverTimezone=Europe/Moscow";
-        //TODO connect to sqlAnywhere database. need to add jConnect.jar to classPath
 
         //for sqlAnywhere
         /*this.dbUser = dbUser;
@@ -36,7 +35,7 @@ class DBhandler {
     }
 
     /**
-     * Loob ühenduse andmebaasiga
+     * Connects to database
      */
     void connectToDB() throws SQLException {
         this.con = DriverManager.getConnection(connectionString, dbUser, dbPass);
@@ -47,7 +46,7 @@ class DBhandler {
         this.stmt = con.createStatement();*/
     }
     /**
-     * Lõpetab ühenduse andmebaasiga
+     * Stops connection to database
      */
     void disconnect() throws SQLException {
         this.con.close();
@@ -58,10 +57,10 @@ class DBhandler {
     }
 
     /**
-     * Koostab ja käivitab SQL käsu andmete vastavasse tabelisse sisestamiseks
-     * @param table     tabeli nimi String
-     * @param columns   tabeli veerud String[]
-     * @param data      tabeli sisu String[]
+     * Construct and runs command for inserting values into a table
+     * @param table     table name String
+     * @param columns   table columns String[]
+     * @param data      table contents String[]
      */
     void insertIntoDB(String table, String[] columns, String[] data) throws SQLException {
         StringBuilder sb = new StringBuilder();
@@ -80,27 +79,23 @@ class DBhandler {
     }
 
     /**
-     * Tagastab nimetatud tabelis olevad tulbad
-     * @param table     tabeli nimi
-     * @return          List<String> objekt tabeli tulpadega
+     * Returns columns from given table
+     * @param table     table name
+     * @return          List<String> with column names
      * @throws SQLException
      */
     List<String> getColumnNames(String table) throws SQLException {
         List<String> columns = new ArrayList<>();
-//        PreparedStatement ps = con.prepareStatement("SHOW COLUMNS FROM ?;");
-//        ps.setString(1, table);
-//        ResultSet rs = ps.executeQuery();
         ResultSet rs = stmt.executeQuery("SHOW COLUMNS FROM " + table + ";");
         while (rs.next())   {
             columns.add(rs.getString(1));
-            //System.out.println(rs.getString(1));
         }
         return columns;
     }
 
     /**
-     * Tagastab ühendusesoleva andmebaasi tabelite nimekirja
-     * @return          List<String> objekt tabelite nimetustega
+     * Returns list of tables from database
+     * @return          List<String> with table names
      * @throws SQLException
      */
     List<String> getTableNames() throws SQLException {
@@ -144,7 +139,7 @@ class DBhandler {
     }
 
     List<List<String>> getTableContent(String tablename) throws SQLException {
-        List<List<String>> vastus = new ArrayList<>();
+        List<List<String>> output = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM " + tablename + ";");
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnsCount = rsmd.getColumnCount();
@@ -153,8 +148,8 @@ class DBhandler {
             for (int i = 1; i <= columnsCount; i++) {
                 rida.add(rs.getString(i));
             }
-            vastus.add(rida);
+            output.add(rida);
         }
-        return vastus;
+        return output;
     }
 }
