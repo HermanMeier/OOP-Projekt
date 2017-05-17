@@ -172,10 +172,12 @@ public class XMLhandler {
         root.removeChild(root.getChildren().get(row).getName());
     }
 
-    public String dataTypeofColumn(String columnname, List<String> columnData){
+    public String dataTypeofColumn(String columnname){
         boolean possibleInt=true;
         boolean possibleDouble=true;
         int maxlength=0;
+
+        List<String> columnData=this.getColumnData(columnname);
 
         for (String data : columnData) {
             maxlength=Integer.max(maxlength, data.length());
