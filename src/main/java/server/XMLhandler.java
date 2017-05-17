@@ -179,4 +179,59 @@ public class XMLhandler {
     public void delRow(int row) {
         root.removeChild(root.getChildren().get(row).getName());
     }
+
+    public String dataTypeofColumn(String columnname, List<String> columnData){
+        boolean possibleInt=true;
+        boolean possibleDouble=true;
+        boolean possibleBoolean=true;
+        int maxlength=0;
+
+        for (String data : columnData) {
+            maxlength=Integer.max(maxlength, data.length());
+            if (possibleInt){
+                if(isInt(data))
+                    possibleInt=false;
+            }
+            if(possibleDouble){
+                if(isDouble(data))
+                    possibleDouble=false;
+            }
+            if(possibleBoolean){
+                if(isBoolean(data))
+                    possibleBoolean=false;
+            }
+        }
+
+        if (maxlength>255)
+            return "BLOB";
+        if (possibleInt)
+            return "INT";
+        if (possibleDouble)
+            return "DOUBLE";
+        return "VARCHAR("+maxlength+")";
+    }
+
+    private boolean isBoolean(String value){
+        if (value.toLowerCase().equals("true")||value.toLowerCase().equals("false"))
+            return true;
+        return false;
+    }
+
+    private boolean isInt(String value){
+        try{
+            Integer.parseInt(value);
+        }catch(NumberFormatException e){
+            return false;}
+        return true;
+    }
+
+    private boolean isDouble(String value){
+        try{
+            Double.parseDouble(value);
+        }catch (NumberFormatException e){
+            return false;
+        }
+        return true;
+    }
+
 }

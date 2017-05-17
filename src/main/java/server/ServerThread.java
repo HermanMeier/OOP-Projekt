@@ -138,6 +138,7 @@ public class ServerThread implements Runnable {
     }
   }
 
+
   private void handleKill(DataOutputStream toClient, List<String> arguments) throws IOException {
     if (arguments != null && arguments.size() == 1) {
       if (arguments.get(0).equals("admin"))  {
