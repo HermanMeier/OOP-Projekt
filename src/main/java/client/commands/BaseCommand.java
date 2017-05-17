@@ -91,6 +91,8 @@ public class BaseCommand {
         return new CommandDisconnect(toServer, fromServer, command, args, "Disconnecting from database...");
       case "showTables":
         return new CommandShowTables(toServer, fromServer, command, args, "Showing columns from tables...");
+      case "showTable":
+        return new CommandShowTable(toServer, fromServer, command, args, "Showing all data from tables...");
       case "showAllTables":
         return new CommandShowAllTables(toServer, fromServer, command, args, "Showing all tables...");
       case "createSampleTable":
