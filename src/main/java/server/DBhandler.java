@@ -126,20 +126,16 @@ class DBhandler {
 
     public void createTable(String tablename ,List<String> columnnames,  List<String> datatypes) throws SQLException {
         StringBuilder sb=new StringBuilder();
+        System.out.println(columnnames.size());
         for (int i = 0; i < columnnames.size(); i++) {
-            sb.append("? ? DEFAULT NULL,");
+            System.out.println(i);
+            sb.append(columnnames.get(i)+" "+datatypes.get(i)+" DEFAULT NULL,");
         }
         sb.deleteCharAt(sb.length()-1);
 
-        PreparedStatement ps = con.prepareStatement("CREATE TABLE ? ("+
+        PreparedStatement ps = con.prepareStatement("CREATE TABLE "+tablename+" ("+
                 "id int AUTO_INCREMENT PRIMARY KEY NOT NULL, "+sb+");");
 
-        ps.setString(1, tablename);
-        for (int i = 0; i < columnnames.size(); i++) {
-
-            ps.setString(2+2*i, columnnames.get(i));
-            ps.setString(3+2*i, datatypes.get(i));
-        }
         System.out.println(ps);
         ps.executeUpdate();
     }
