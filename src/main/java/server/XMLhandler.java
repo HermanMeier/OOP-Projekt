@@ -203,7 +203,7 @@ public class XMLhandler {
             return "INT";
         if (possibleDouble)
             return "DOUBLE";
-        return "VARCHAR("+maxlength+")";
+        return "VARCHAR(255)";
     }
 
     private boolean isBoolean(String value){
