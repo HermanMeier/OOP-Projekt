@@ -89,10 +89,6 @@ public class ServerThread implements Runnable {
 
           case "connect":
             handleConnect(dos, arguments);
-              List<String> columnnames= Arrays.asList("abc", "asd", "bbb");
-              List<String> datatypes= Arrays.asList("INT", "VARCHAR(255)","DOUBLE");
-              String tablename="name";
-            db.createTable(tablename, columnnames, datatypes);
             break;
 
           case "url":
@@ -299,9 +295,6 @@ public class ServerThread implements Runnable {
                 openedXMLfiles.get(argument).openXML();
                 openedXMLfiles.get(argument).saveWords();
 
-                /*Map<String, String> test = scan.startScan(openedXMLfiles.get(argument));
-                System.out.println(test.size());
-                test.forEach((key,value) -> System.out.println("Key: "+key+"  Value: "+value));*/
                 dos.writeUTF("File opened.");
               }
               else

@@ -20,7 +20,7 @@ class AccountManager {
   }
 
   private void loadUsers() throws IOException {
-    //reades usernames and hashed passwords from users file
+    //reads usernames and hashed passwords from users file
     try (BufferedReader fromFile = new BufferedReader(new InputStreamReader(new FileInputStream(usersFile)))) {
       String line = fromFile.readLine();
       while (line != null) {
