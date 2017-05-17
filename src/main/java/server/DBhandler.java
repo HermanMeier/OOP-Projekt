@@ -73,13 +73,8 @@ class DBhandler {
             sb.append(", ").append(d);
         }
         String values = sb.substring(2);
-        //System.out.println(cols);
-        //System.out.println(values);
-        PreparedStatement ps = con.prepareStatement("INSERT INTO ? ( ? ) VALUES ( ? );");
-        ps.setString(1, table);
-        ps.setString(2, cols);
-        ps.setString(3, values);
-        System.out.println(ps.toString());
+        PreparedStatement ps = con.prepareStatement("INSERT INTO " + table + " ( " + cols + " ) VALUES ( ? );");
+        ps.setString(1, values);
         ps.executeUpdate();
     }
 
