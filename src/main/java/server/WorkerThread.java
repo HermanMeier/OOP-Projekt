@@ -1,6 +1,5 @@
 package server;
 
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class WorkerThread implements Runnable{
@@ -17,9 +16,8 @@ public class WorkerThread implements Runnable{
   @Override
   public void run() {
     String currentColumn = columnsToProcess.poll();
-    List<String> data = xml.getColumnData(currentColumn);
 
-    String dataType = xml.dataTypeofColumn(currentColumn, data);
+    String dataType = xml.dataTypeofColumn(currentColumn);
     try {
       dataTypes.put(new String[]{currentColumn, dataType});
     } catch (InterruptedException e) {

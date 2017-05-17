@@ -25,9 +25,9 @@ public class XMLhandler {
     }
 
     /**
-     * Teeb xml failist klassi Document isendi, mida saab kasutada failist info saamiseks.
-     * Loob ka root elemendi, mis on xml failis kõige esimene tag.
-     * Seda meetodit peab kasutama, et teised selles klassis olevad meetodid töötaksid.
+     * Turns the xml file into a Document object which can be used for info gathering
+     * Creates a root element which is the first tag in the xml file
+     * This method must be called for all other methods in this class to work.
      *
      * @throws JDOMException
      * @throws IOException
@@ -37,7 +37,7 @@ public class XMLhandler {
         SAXBuilder saxBuilder = new SAXBuilder();
 
 
-        File inputFile = new File("xmlFiles\\"+xmlFileName);
+        File inputFile = new File("xmlFiles"+File.separatorChar+xmlFileName);
         xmlDocument = saxBuilder.build(inputFile);
         root = xmlDocument.getRootElement();
     }
@@ -51,10 +51,10 @@ public class XMLhandler {
     }
 
   /**
-     * Abimeetod meetodile printContent.
+     * Used by printContent
      *
-     * @param parent    Element mis sisaldab mitut elementi
-     * @param level     Sügavus rekursiooniks
+     * @param parent    Element which contains other elements
+     * @param level     Depth for recursion
      */
     private void printChildren(Element parent, int level)    {
         for (int i = 0; i < level; i++) {
@@ -82,7 +82,7 @@ public class XMLhandler {
     }
 
     /**
-     * Kasutab rekursiooni, et kuvada kogu xml faili sisu.
+     * Utilises recursion to display the contens of the xml file
      */
     public void printContent()  {
         List<Element> children = root.getChildren();
@@ -94,9 +94,9 @@ public class XMLhandler {
     }
 
     /**
-     * Leiab kõik unikaalsed tulpade pealkirjad.
+     * Finds all unique column names
      *
-     * @return      List kõikide tulpae nimedest
+     * @return      List of all column names
      */
     List<String> getColumns()    {
         List<String> columns = new ArrayList<>();
@@ -113,15 +113,15 @@ public class XMLhandler {
     }
 
     /**
-     * @return      Tagastab ridade arvu.
+     * @return      Number of rows in xml file
      */
     int getNumberOfRows()   {
         return root.getChildren().size();
     }
 
     /**
-     * @param row   Rea number
-     * @return      Tagastab ühe rea kõikide tulpade väärtused. Ei sisalda tulba pealkirju.
+     * @param row   Row number
+     * @return      Values of all columns from given row
      */
     public List<String> getRow(int row) {
         List<String> content = new ArrayList<>();
@@ -146,46 +146,38 @@ public class XMLhandler {
     }
 
     /**
-     * Selle meetodiga saab küsida kindla välja väärtust tabelis.
+     * Returns the value at given row in the given column
      *
-     * @param column    Milline tulp(kasuta getColumns() tagastatud väärtusi)
-     * @param row       Mitmes rida
+     * @param column    String columnname
+     * @param row       int row number
      */
     String getValue(String column, int row)  {
         Element current = root.getChildren().get(row);
         return current.getChild(column).getText();
     }
 
-    /**
-     * Kustutab terve tulba, mitte ei tühejenda lahtreid
-     */
     public void delColumn(String column)    {
         for (Element element : root.getChildren()) {
             element.removeChildren(column);
         }
     }
 
-    /**
-     * Tühjendab ühe tabeli välja
-     *
-     */
+
     public void removeValueFrom(String column, int row)    {
         Element current = root.getChildren().get(row);
         current.getChild(column).removeContent();
     }
 
-    /**
-     * Kustutab ühe rea.
-     *
-     */
     public void delRow(int row) {
         root.removeChild(root.getChildren().get(row).getName());
     }
 
-    public String dataTypeofColumn(String columnname, List<String> columnData){
+    public String dataTypeofColumn(String columnname){
         boolean possibleInt=true;
         boolean possibleDouble=true;
         int maxlength=0;
+
+        List<String> columnData=this.getColumnData(columnname);
 
         for (String data : columnData) {
             maxlength=Integer.max(maxlength, data.length());
