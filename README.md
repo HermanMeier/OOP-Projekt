@@ -31,25 +31,46 @@ List of all commands:
 Command | syntax | Result
 --- | --- | ---
 ? | `?` | Displays all commands
+--- | --- | ---
 signup | `signup username password` | Creates a guest account
+--- | --- | ---
 login | `login username password` | Logs in
+--- | --- | ---
 logout | `logout` | Logs out
+--- | --- | ---
 kill | `kill userName` | Removes user with userName
+--- | --- | ---
 exit | `exit` | Closes client and connection to server
+--- | --- | ---
 files | `files` | Displays all files in xmlFiles directory
+--- | --- | ---
 sendFile | `sendFile 1filePath 2filePath ...` | Sends all listed files to server
+--- | --- | ---
 url | `url 1url 2url ...` | Server downloads all listed files
+--- | --- | ---
 open | `open 1fileName 2fileName ...` | Opens all listed files, supports *
+--- | --- | ---
 close | `close 1fileName 2fileName ...` | Closes all listed files, supports *
+--- | --- | ---
 delete | `delete 1fileName 2fileName ...` | Deletes all listed files
+--- | --- | ---
 show | `show fileName` | Displays all columns from xml file
+--- | --- | ---
 rename | `rename oldName newName` | Renames a file
+--- | --- | ---
 connect | `connect user password dbName hostIP` | Connects to a database
+--- | --- | ---
 disconnect | `disconnect` | disconnects from database
+--- | --- | ---
 showAllTables | `showAllTables` | Displays all table names in database
+--- | --- | ---
 showTables | `showTables tableName` | Displays all column names from table
+--- | --- | ---
 showTable | `showTable tableName` | Displays all data from table
+--- | --- | ---
 search | `search string` | Searches for string from all opened xml file and database table column names
+--- | --- | ---
 insert | `insert xmlFileName tableName xmlColumn tableColumn` | Inserts data from xmlColumn to tableColumn
+--- | --- | ---
 createTable | `createTable tableName xmlFileName` | Creates a table from an xml file
 
