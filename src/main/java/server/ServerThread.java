@@ -7,7 +7,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class ServerThread implements Runnable {
@@ -89,10 +92,10 @@ public class ServerThread implements Runnable {
 
           case "connect":
             handleConnect(dos, arguments);
-              List<String> columnnames= Arrays.asList("abc", "asd", "bbb");
+/*              List<String> columnnames= Arrays.asList("abc", "asd", "bbb");
               List<String> datatypes= Arrays.asList("INT", "VARCHAR(255)","DOUBLE");
               String tablename="name";
-            db.createTable(tablename, columnnames, datatypes);
+            db.createTable(tablename, columnnames, datatypes);*/
             break;
 
           case "url":
@@ -132,6 +135,9 @@ public class ServerThread implements Runnable {
           case "delete":
             handleDelete(dos, arguments);
             break;
+          case "createTable":
+            createTableFromXML(dos, arguments);
+            break;
           case "exit":
             accountManager.saveUsers();
             running = false;
@@ -143,11 +149,29 @@ public class ServerThread implements Runnable {
     }
   }
 
+  private void createTableFromXML(DataOutputStream toClient, List<String> arguments) throws IOException, InterruptedException, SQLException {
+    if (db == null) {
+      toClient.writeUTF("Not connected to database");
+    }
+    else if (arguments.size()!=2)  {
+      toClient.writeUTF("Wrong number of arguments");
+    }
+    else if (!openedXMLfiles.containsKey(arguments.get(1)))  {
+      toClient.writeUTF("XML file not open");
+    }
+    else  {
+      XMLscanner scan = new XMLscanner();
+      Map<String, String> xmlData = scan.startScan(openedXMLfiles.get(arguments.get(1)));
+      db.createTable(arguments.get(1), xmlData);
+      toClient.writeUTF("Table "+arguments.get(0)+" created");
+    }
+  }
+
 
   private void handleKill(DataOutputStream toClient, List<String> arguments) throws IOException {
     if (arguments != null && arguments.size() == 1) {
       if (arguments.get(0).equals("admin"))  {
-        toClient.writeUTF("You can't remove admin account");
+        toClient.writeUTF("One does not simply remove admin account");
       }
       else if (accountManager.getUsers().containsKey(arguments.get(0)))  {
         accountManager.getUsers().remove(arguments.get(0));
@@ -188,6 +212,7 @@ public class ServerThread implements Runnable {
       //xmlfilename, table name, xmlColumnnames, dbColumnnames
       if (arguments.size()<4 || arguments.size()%2!=0){
           dos.writeUTF("Invalid amount of arguments, correct syntax is xmlfilename, tablename, xmlcolumnnames, dbcolumnnames");
+          return;
       }
 
       if (openedXMLfiles.isEmpty() || !openedXMLfiles.containsKey(arguments.get(0))){
@@ -222,7 +247,13 @@ public class ServerThread implements Runnable {
           for (String xmlColumnName : xmlColumnNames) {
               data.add(xml.getValue(xmlColumnName, i));
           }
-          db.insertIntoDB(tableName, dbColumnNames, data.toArray(new String[0]));
+          try {
+            db.insertIntoDB(tableName, dbColumnNames, data.toArray(new String[0]));
+          } catch (SQLException e)  {
+            dos.writeUTF("SQL exception");
+            e.printStackTrace();
+            return;
+          }
       }
       dos.writeUTF("Inserting successful");
   }
@@ -275,7 +306,6 @@ public class ServerThread implements Runnable {
   }
 
   private void handleOpen(DataOutputStream dos, List<String> arguments) throws Exception {
-    XMLscanner scan = new XMLscanner();
       if (arguments.size()==0)  {
           dos.writeUTF("Wrong number of arguments");
       }
@@ -298,10 +328,6 @@ public class ServerThread implements Runnable {
                 openedXMLfiles.put(argument, new XMLhandler(argument));
                 openedXMLfiles.get(argument).openXML();
                 openedXMLfiles.get(argument).saveWords();
-
-                /*Map<String, String> test = scan.startScan(openedXMLfiles.get(argument));
-                System.out.println(test.size());
-                test.forEach((key,value) -> System.out.println("Key: "+key+"  Value: "+value));*/
                 dos.writeUTF("File opened.");
               }
               else

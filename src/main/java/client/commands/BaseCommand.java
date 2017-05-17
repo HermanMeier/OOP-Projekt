@@ -116,7 +116,7 @@ public class BaseCommand {
       case "delete":
         return new CommandDelete(toServer, fromServer, command, args, "Deleting file(s)...");
       case "kill":
-        return new CommandKill(toServer, fromServer, command, args, "Removeing user...");
+        return new CommandKill(toServer, fromServer, command, args, "Removing user...");
       case "createTable":
         return new CommandCreateTableFromXML(toServer, fromServer, command, args, "Creating table...");
       default:

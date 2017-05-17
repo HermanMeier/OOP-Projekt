@@ -3,6 +3,7 @@ package server;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 class DBhandler {
     private String dbUser;
@@ -124,14 +125,16 @@ class DBhandler {
                 ");");
     }
 
-    public void createTable(String tablename, List<String> columnnames, List<String> datatypes) throws SQLException {
+    void createTable(String tablename, Map<String, String> data) throws SQLException {
         StringBuilder sb=new StringBuilder();
-        for (int i = 0; i < columnnames.size(); i++) {
-            sb.append(columnnames.get(i));
+
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            sb.append(entry.getKey());
             sb.append(" ");
-            sb.append(datatypes.get(i));
+            sb.append(entry.getValue());
             sb.append(" DEFAULT NULL,");
         }
+
         sb.deleteCharAt(sb.length()-1);
 
         PreparedStatement ps = con.prepareStatement("CREATE TABLE "+tablename+" ("+
@@ -140,7 +143,7 @@ class DBhandler {
         ps.executeUpdate();
     }
 
-    public List<List<String>> getTableContent(String tablename) throws SQLException {
+    List<List<String>> getTableContent(String tablename) throws SQLException {
         List<List<String>> vastus = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM " + tablename + ";");
         ResultSetMetaData rsmd = rs.getMetaData();
