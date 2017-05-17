@@ -124,7 +124,7 @@ class DBhandler {
                 ");");
     }
 
-    public void createTable(String tablename ,List<String> columnnames,  List<String> datatypes) throws SQLException {
+    public void createTable(String tablename, List<String> columnnames, List<String> datatypes) throws SQLException {
         StringBuilder sb=new StringBuilder();
         for (int i = 0; i < columnnames.size(); i++) {
             sb.append("? ? DEFAULT NULL,");
@@ -142,5 +142,20 @@ class DBhandler {
         }
         System.out.println(ps);
         ps.executeUpdate();
+    }
+
+    public List<List<String>> getTableContent(String tablename) throws SQLException {
+        List<List<String>> vastus = new ArrayList<>();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM " + tablename + ";");
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnsCount = rsmd.getColumnCount();
+        while (rs.next()) {
+            List<String> rida = new ArrayList<>();
+            for (int i = 1; i <= columnsCount; i++) {
+                rida.add(rs.getString(i));
+            }
+            vastus.add(rida);
+        }
+        return vastus;
     }
 }

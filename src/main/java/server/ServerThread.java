@@ -103,6 +103,10 @@ public class ServerThread implements Runnable {
             handleShowTables(dos, arguments);
             break;
 
+          case "showTable":
+            handleShowTable(dos, arguments);
+            break;
+
           case "showAllTables":
             handleShowAllTables(dos);
             break;
@@ -324,6 +328,22 @@ public class ServerThread implements Runnable {
                 List<String> columns = db.getColumnNames(argument);
                 dos.writeUTF("Table " + argument + " contains columns: " + String.join(", ", columns));
             }
+        }
+    }
+
+    private void handleShowTable(DataOutputStream dos, List<String> arguments) throws IOException, SQLException {
+        if (arguments.size() == 0)  {
+            dos.writeUTF("You must specify a table name.");
+        } else if (db == null) {
+            dos.writeUTF("Not connected to database.");
+        } else {
+            List<List<String>> data = db.getTableContent(arguments.get(0));
+            StringBuilder sb = new StringBuilder();
+            for (List<String> datum : data) {
+                sb.append(String.join(", ", datum));
+                sb.append("\n");
+            }
+            dos.writeUTF("Table " + arguments.get(0) + " contains data as follows: \n" + sb.toString());
         }
     }
 
