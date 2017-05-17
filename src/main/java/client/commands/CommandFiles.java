@@ -5,19 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class CommandFiles extends BaseCommand implements Command {
-  CommandFiles(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
-    super(toServer, fromServer, args);
-  }
-
-  @Override
-  public void beforeSend() {
-
-  }
-
-  @Override
-  public void send() throws IOException {
-    sendCommand("files",null);
+public class CommandFiles extends BaseCommand {
+  CommandFiles(DataOutputStream toServer, DataInputStream fromServer, String command, List<String> args, String message) {
+    super(toServer, fromServer, command, args, message);
   }
 
   @Override

@@ -2,26 +2,11 @@ package client.commands;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.List;
 
-public class CommandShowAllTables extends BaseCommand implements Command {
-    CommandShowAllTables(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
-        super(toServer, fromServer, args);
+class CommandShowAllTables extends BaseCommand {
+    CommandShowAllTables(DataOutputStream toServer, DataInputStream fromServer, String command, List<String> args, String message) {
+        super(toServer, fromServer, command, args, message);
     }
 
-    @Override
-    public void beforeSend() {
-        System.out.println("Showing database tables...");
-    }
-
-    @Override
-    public void send() throws IOException {
-        sendCommand("showAllTables", args);
-    }
-
-    @Override
-    public void afterSend() throws IOException {
-        System.out.println(fromServer.readUTF());
-    }
 }

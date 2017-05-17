@@ -6,19 +6,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandShow extends BaseCommand implements Command{
-  CommandShow(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
-    super(toServer, fromServer, args);
-  }
-
-  @Override
-  public void beforeSend() {
-
-  }
-
-  @Override
-  public void send() throws IOException {
-    sendCommand("show", args);
+public class CommandShow extends BaseCommand {
+  CommandShow(DataOutputStream toServer, DataInputStream fromServer, String command, List<String> args, String message) {
+    super(toServer, fromServer, command, args, message);
   }
 
   @Override

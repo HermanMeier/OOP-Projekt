@@ -5,25 +5,20 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class CommandURL extends BaseCommand implements Command {
-  CommandURL(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
-    super(toServer, fromServer, args);
-  }
-
-  @Override
-  public void beforeSend() {
-    System.out.println("Sending url...");
-  }
-
-  @Override
-  public void send() throws IOException {
-    sendCommand("url", args);
+class CommandURL extends BaseCommand {
+  CommandURL(DataOutputStream toServer, DataInputStream fromServer, String command, List<String> args, String message) {
+    super(toServer, fromServer, command, args, message);
   }
 
   @Override
   public void afterSend() throws IOException {
-    for (String arg : args) {
+    if (args.size() == 0) {
       System.out.println(fromServer.readUTF());
+    }
+    else  {
+      for (int i = 0; i < args.size(); i++) {
+        System.out.println(fromServer.readUTF());
+      }
     }
   }
 }

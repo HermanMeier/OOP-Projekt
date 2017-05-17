@@ -5,19 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class CommandLogin extends  BaseCommand implements  Command{
-  CommandLogin(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
-    super(toServer, fromServer, args);
-  }
-
-  @Override
-  public void beforeSend() {
-    System.out.println("Logging in...");
-  }
-
-  @Override
-  public void send() throws IOException {
-    sendCommand("login", args);
+public class CommandLogin extends  BaseCommand {
+  CommandLogin(DataOutputStream toServer, DataInputStream fromServer, String command, List<String> args, String message) {
+    super(toServer, fromServer, command, args, message);
   }
 
   @Override

@@ -257,14 +257,14 @@ public class ServerThread implements Runnable {
           dos.writeUTF("All files closed.");
       }
       else {
-          for (String argument : arguments) {
-              if (!openedXMLfiles.containsKey(argument)) {
-                  dos.writeUTF("File "+argument+" not open.");
-              }
-              else {
-                  openedXMLfiles.remove(argument);
-                  dos.writeUTF("File "+argument+" closed.");
-              }
+        for (String argument : arguments) {
+          if (!openedXMLfiles.containsKey(argument)) {
+              dos.writeUTF("File "+argument+" not open.");
+          }
+          else {
+              openedXMLfiles.remove(argument);
+              dos.writeUTF("File "+argument+" closed.");
+          }
           }
       }
   }
@@ -277,7 +277,6 @@ public class ServerThread implements Runnable {
       else if (arguments.get(0).equals("*"))  {
           for (String file : getExistingFiles()) {
               if (file.endsWith(".xml") && !openedXMLfiles.containsKey(file))  {
-                //TODO kas scannimine tehakse siin või siis kui tabelit tehakse?
                   openedXMLfiles.put(file, new XMLhandler(file));
                   openedXMLfiles.get(file).openXML();
                   openedXMLfiles.get(file).saveWords();
