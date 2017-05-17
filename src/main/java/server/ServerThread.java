@@ -7,10 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class ServerThread implements Runnable {
@@ -92,10 +89,6 @@ public class ServerThread implements Runnable {
 
           case "connect":
             handleConnect(dos, arguments);
-/*              List<String> columnnames= Arrays.asList("abc", "asd", "bbb");
-              List<String> datatypes= Arrays.asList("INT", "VARCHAR(255)","DOUBLE");
-              String tablename="name";
-            db.createTable(tablename, columnnames, datatypes);*/
             break;
 
           case "url":
@@ -212,7 +205,6 @@ public class ServerThread implements Runnable {
       //xmlfilename, table name, xmlColumnnames, dbColumnnames
       if (arguments.size()<4 || arguments.size()%2!=0){
           dos.writeUTF("Invalid amount of arguments, correct syntax is xmlfilename, tablename, xmlcolumnnames, dbcolumnnames");
-          return;
       }
 
       if (openedXMLfiles.isEmpty() || !openedXMLfiles.containsKey(arguments.get(0))){
@@ -328,6 +320,7 @@ public class ServerThread implements Runnable {
                 openedXMLfiles.put(argument, new XMLhandler(argument));
                 openedXMLfiles.get(argument).openXML();
                 openedXMLfiles.get(argument).saveWords();
+
                 dos.writeUTF("File opened.");
               }
               else
