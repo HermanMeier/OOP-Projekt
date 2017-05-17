@@ -3,33 +3,17 @@ package client.commands;
 import java.io.*;
 import java.util.List;
 
-public class CommandSendFile extends BaseCommand implements Command {
-
-  CommandSendFile(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
-    super(toServer, fromServer, args);
-  }
-
-  @Override
-  public void beforeSend() {
-    System.out.println("Sending files...");
+public class CommandSendFile extends BaseCommand {
+  CommandSendFile(DataOutputStream toServer, DataInputStream fromServer, String command, List<String> args, String message) {
+    super(toServer, fromServer, command, args, message);
   }
 
   @Override
   public void send() throws IOException {
-    sendCommand("sendFile", args);
+    sendCommand(command, args);
     if (args != null) {
       for (String arg : args) {
         sendFile(arg);
-      }
-    }
-  }
-
-  @Override
-  public void afterSend() throws IOException {
-    //System.out.println(fromServer.readUTF());
-    if (args != null) {
-      for (int i = 0; i < args.size(); i++) {
-        System.out.println(fromServer.readUTF());
       }
     }
   }

@@ -5,19 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class CommandLogout extends BaseCommand implements Command{
-  CommandLogout(DataOutputStream toServer, DataInputStream fromServer, List<String> args) {
-    super(toServer, fromServer, args);
-  }
-
-  @Override
-  public void beforeSend() {
-    System.out.println("Logging out...");
-  }
-
-  @Override
-  public void send() throws IOException {
-    sendCommand("logout", null);
+public class CommandLogout extends BaseCommand {
+  CommandLogout(DataOutputStream toServer, DataInputStream fromServer, String command, List<String> args, String message) {
+    super(toServer, fromServer, command, args, message);
   }
 
   @Override

@@ -1,7 +1,6 @@
 package client;
 
 import client.commands.BaseCommand;
-import client.commands.Command;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -48,9 +47,9 @@ public class Client {
         for (String arg : args) {
           List<String> commands = Arrays.asList("?", "connect", "url", "sendFile", "edit", "exit",
                         "files", "open", "close", "disconnect", "search", "show", "rename", "def",
-                        "showTables", "showAllTables", "createSampleTable", "insert", "delete", "kill");
+                        "showTables", "showAllTables", "createSampleTable", "insert", "delete", "kill", "createTable");
           String commandString = arg.replace(";", " ");
-          Command command = new BaseCommand(commands,dos,dis).createCommand(commandString);
+          BaseCommand command = new BaseCommand(commands,dos,dis,commandString).createCommand();
 
           if (command != null)  {
             command.beforeSend();
@@ -64,7 +63,7 @@ public class Client {
         while (running) {
           String commandString = waitForCommand(commands, sc);
 
-          Command command = new BaseCommand(commands, dos, dis).createCommand(commandString);
+          BaseCommand command = new BaseCommand(commands, dos, dis, commandString).createCommand();
 
           if (command != null) {
             command.beforeSend();
@@ -80,12 +79,12 @@ public class Client {
                 //admin
                 setCommands(Arrays.asList("?", "connect", "url", "sendFile",
                         "files", "open", "close", "disconnect", "search", "show", "rename", "logout",
-                        "showTables", "showAllTables", "createSampleTable", "insert", "delete", "kill"));
+                        "showTables", "showAllTables", "createSampleTable", "insert", "delete", "kill", "createTable"));
               } else {
                 //guest
                 setCommands(Arrays.asList("?", "url", "sendFile",
                         "files", "open", "close", "search", "show", "logout", "showTables",
-                        "showAllTables", "insert"));
+                        "showAllTables", "insert", "createTable"));
               }
             }
           }

@@ -89,6 +89,10 @@ public class ServerThread implements Runnable {
 
           case "connect":
             handleConnect(dos, arguments);
+              List<String> columnnames= Arrays.asList("abc", "asd", "bbb");
+              List<String> datatypes= Arrays.asList("INT", "VARCHAR(255)","DOUBLE");
+              String tablename="name";
+            db.createTable(tablename, columnnames, datatypes);
             break;
 
           case "url":
@@ -258,14 +262,14 @@ public class ServerThread implements Runnable {
           dos.writeUTF("All files closed.");
       }
       else {
-          for (String argument : arguments) {
-              if (!openedXMLfiles.containsKey(argument)) {
-                  dos.writeUTF("File "+argument+" not open.");
-              }
-              else {
-                  openedXMLfiles.remove(argument);
-                  dos.writeUTF("File "+argument+" closed.");
-              }
+        for (String argument : arguments) {
+          if (!openedXMLfiles.containsKey(argument)) {
+              dos.writeUTF("File "+argument+" not open.");
+          }
+          else {
+              openedXMLfiles.remove(argument);
+              dos.writeUTF("File "+argument+" closed.");
+          }
           }
       }
   }
@@ -278,7 +282,6 @@ public class ServerThread implements Runnable {
       else if (arguments.get(0).equals("*"))  {
           for (String file : getExistingFiles()) {
               if (file.endsWith(".xml") && !openedXMLfiles.containsKey(file))  {
-                //TODO kas scannimine tehakse siin või siis kui tabelit tehakse?
                   openedXMLfiles.put(file, new XMLhandler(file));
                   openedXMLfiles.get(file).openXML();
                   openedXMLfiles.get(file).saveWords();
@@ -296,9 +299,9 @@ public class ServerThread implements Runnable {
                 openedXMLfiles.get(argument).openXML();
                 openedXMLfiles.get(argument).saveWords();
 
-                Map<String, String> test = scan.startScan(openedXMLfiles.get(argument));
+                /*Map<String, String> test = scan.startScan(openedXMLfiles.get(argument));
                 System.out.println(test.size());
-                test.forEach((key,value) -> System.out.println("Key: "+key+"  Value: "+value));
+                test.forEach((key,value) -> System.out.println("Key: "+key+"  Value: "+value));*/
                 dos.writeUTF("File opened.");
               }
               else
