@@ -7,10 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class ServerThread implements Runnable {
@@ -92,6 +89,10 @@ public class ServerThread implements Runnable {
 
           case "connect":
             handleConnect(dos, arguments);
+              List<String> columnnames= Arrays.asList("abc", "asd", "bbb");
+              List<String> datatypes= Arrays.asList("INT", "VARCHAR(255)","DOUBLE");
+              String tablename="name";
+            db.createTable(tablename, columnnames, datatypes);
             break;
 
           case "url":
