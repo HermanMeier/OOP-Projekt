@@ -7,7 +7,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class ServerThread implements Runnable {
@@ -291,9 +294,9 @@ public class ServerThread implements Runnable {
                 openedXMLfiles.get(argument).openXML();
                 openedXMLfiles.get(argument).saveWords();
 
-                Map<String, String> test = scan.startScan(openedXMLfiles.get(argument));
+                /*Map<String, String> test = scan.startScan(openedXMLfiles.get(argument));
                 System.out.println(test.size());
-                test.forEach((key,value) -> System.out.println("Key: "+key+"  Value: "+value));
+                test.forEach((key,value) -> System.out.println("Key: "+key+"  Value: "+value));*/
                 dos.writeUTF("File opened.");
               }
               else
