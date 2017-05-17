@@ -73,13 +73,8 @@ class DBhandler {
             sb.append(", ").append(d);
         }
         String values = sb.substring(2);
-        //System.out.println(cols);
-        //System.out.println(values);
-        PreparedStatement ps = con.prepareStatement("INSERT INTO ? ( ? ) VALUES ( ? );");
-        ps.setString(1, table);
-        ps.setString(2, cols);
-        ps.setString(3, values);
-        System.out.println(ps.toString());
+        PreparedStatement ps = con.prepareStatement("INSERT INTO " + table + " ( " + cols + " ) VALUES ( ? );");
+        ps.setString(1, values);
         ps.executeUpdate();
     }
 
@@ -129,4 +124,23 @@ class DBhandler {
                 ");");
     }
 
+    public void createTable(String tablename ,List<String> columnnames,  List<String> datatypes) throws SQLException {
+        StringBuilder sb=new StringBuilder();
+        for (int i = 0; i < columnnames.size(); i++) {
+            sb.append("? ? DEFAULT NULL,");
+        }
+        sb.deleteCharAt(sb.length()-1);
+
+        PreparedStatement ps = con.prepareStatement("CREATE TABLE ? ("+
+                "id int AUTO_INCREMENT PRIMARY KEY NOT NULL, "+sb+");");
+
+        ps.setString(1, tablename);
+        for (int i = 0; i < columnnames.size(); i++) {
+
+            ps.setString(2+2*i, columnnames.get(i));
+            ps.setString(3+2*i, datatypes.get(i));
+        }
+        System.out.println(ps);
+        ps.executeUpdate();
+    }
 }
