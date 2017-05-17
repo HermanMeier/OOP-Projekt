@@ -15,6 +15,7 @@ public class CommandHelp extends BaseCommand {
     System.out.println("Syntax: <commandName> <param1> <param2> ...");
     System.out.println("Valid commands:");
     commands.forEach(System.out::println);
+    System.out.println("For more help check the project readme");
   }
 
   @Override

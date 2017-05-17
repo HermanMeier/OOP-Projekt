@@ -48,7 +48,7 @@ rename | `rename oldName newName` | Renames a file
 connect | `connect user password dbName hostIP` | Connects to a database
 disconnect | `disconnect` | disconnects from database
 showAllTables | `showAllTables` | Displays all table names in database
-showTables | `showTables tableName` | Displays all column names from table
+showTableColumns | `showTableColumns tableName` | Displays all column names from table
 showTable | `showTable tableName` | Displays all data from table
 search | `search string` | Searches for string from all opened xml file and database table column names
 insert | `insert xmlFileName tableName xmlColumn tableColumn` | Inserts data from xmlColumn to tableColumn

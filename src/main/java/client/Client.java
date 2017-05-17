@@ -47,7 +47,7 @@ public class Client {
         for (String arg : args) {
           List<String> commands = Arrays.asList("?", "connect", "url", "sendFile", "edit", "exit",
                         "files", "open", "close", "disconnect", "search", "show", "rename", "def",
-                        "showTables", "showTable", "showAllTables", "createSampleTable", "insert", "delete", "kill", "createTable");
+                        "showTableColumns", "showTable", "showAllTables", "createSampleTable", "insert", "delete", "kill", "createTable");
           String commandString = arg.replace(";", " ");
           BaseCommand command = new BaseCommand(commands,dos,dis,commandString).createCommand();
 
@@ -83,7 +83,7 @@ public class Client {
               } else {
                 //guest
                 setCommands(Arrays.asList("?", "url", "sendFile",
-                        "files", "open", "close", "search", "show", "logout", "showTables",
+                        "files", "open", "close", "search", "show", "logout", "showTableColumns",
                         "showTable", "showAllTables", "insert", "createTable"));
               }
             }
