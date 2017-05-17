@@ -44,6 +44,9 @@ public class ServerThread implements Runnable {
         switch (command) {
           case "?":
             break;
+          case "kill":
+            handleKill(dos, arguments);
+            break;
           case "logout":
             accountManager.saveUsers();
             System.out.println("Logout at "+ LocalDateTime.now());
@@ -133,6 +136,23 @@ public class ServerThread implements Runnable {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private void handleKill(DataOutputStream toClient, List<String> arguments) throws IOException {
+    if (arguments != null && arguments.size() == 1) {
+      if (arguments.get(0).equals("admin"))  {
+        toClient.writeUTF("You can't remove admin account");
+      }
+      else if (accountManager.getUsers().containsKey(arguments.get(0)))  {
+        accountManager.getUsers().remove(arguments.get(0));
+        toClient.writeUTF("User "+arguments.get(0)+" removed");
+      }
+      else  {
+        toClient.writeUTF("No such user");
+      }
+    }
+    else
+      toClient.writeUTF("Wrong number of arguments");
   }
 
   private void handleDelete(DataOutputStream toClient, List<String> arguments) throws IOException {
@@ -438,7 +458,7 @@ public class ServerThread implements Runnable {
     File file = new File("xmlFiles"+File.separatorChar+fileName);
     try(InputStream in = url.openStream();
       FileOutputStream out = new FileOutputStream(file))  {
-      byte[] buffer = new byte[1024];
+      byte[] buffer = new byte[BUFFER_SIZE];
         int count;
         while ((count = in.read(buffer)) > 0) {
           out.write(buffer, 0, count);

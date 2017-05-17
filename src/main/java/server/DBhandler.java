@@ -7,9 +7,8 @@ import java.util.List;
 class DBhandler {
     private String dbUser;
     private String dbPass;
-    private String dbHost;
     private String dbName;
-    //private String connectionString;
+    private String connectionString;
     private Connection con;
     private Statement stmt;
 
@@ -24,7 +23,7 @@ class DBhandler {
         this.dbUser = dbUser;
         this.dbPass = dbPass;
         this.dbName = dbName;
-        this.dbHost = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useBLegacyDatetimeCode=fBalse&serverTimezone=Europe/Moscow";
+        this.connectionString = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useBLegacyDatetimeCode=fBalse&serverTimezone=Europe/Moscow";
         //TODO connect to sqlAnywhere database. need to add jConnect.jar to classPath
 
         //for sqlAnywhere
@@ -39,7 +38,7 @@ class DBhandler {
      * Loob ühenduse andmebaasiga
      */
     void connectToDB() throws SQLException {
-        this.con = DriverManager.getConnection(dbHost, dbUser, dbPass);
+        this.con = DriverManager.getConnection(connectionString, dbUser, dbPass);
         this.stmt = con.createStatement();
 
         //for sqlAnywhere

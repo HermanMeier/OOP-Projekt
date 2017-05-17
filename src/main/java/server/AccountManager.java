@@ -15,6 +15,10 @@ class AccountManager {
     loadUsers();
   }
 
+  public Map<String, String> getUsers() {
+    return users;
+  }
+
   private void loadUsers() throws IOException {
     //reades usernames and hashed passwords from users file
     try (BufferedReader fromFile = new BufferedReader(new InputStreamReader(new FileInputStream(usersFile)))) {
