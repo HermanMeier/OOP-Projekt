@@ -270,6 +270,7 @@ public class ServerThread implements Runnable {
   }
 
   private void handleOpen(DataOutputStream dos, List<String> arguments) throws Exception {
+    XMLscanner scan = new XMLscanner();
       if (arguments.size()==0)  {
           dos.writeUTF("Wrong number of arguments");
       }
@@ -290,10 +291,14 @@ public class ServerThread implements Runnable {
                   dos.writeUTF("File already opened.");
               }
               else if (getExistingFiles().contains(argument)) {
-                  openedXMLfiles.put(argument, new XMLhandler(argument));
-                  openedXMLfiles.get(argument).openXML();
-                  openedXMLfiles.get(argument).saveWords();
-                  dos.writeUTF("File opened.");
+                openedXMLfiles.put(argument, new XMLhandler(argument));
+                openedXMLfiles.get(argument).openXML();
+                openedXMLfiles.get(argument).saveWords();
+
+                Map<String, String> test = scan.startScan(openedXMLfiles.get(argument));
+                System.out.println(test.size());
+                test.forEach((key,value) -> System.out.println("Key: "+key+"  Value: "+value));
+                dos.writeUTF("File opened.");
               }
               else
                   dos.writeUTF("No such file.");

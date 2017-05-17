@@ -134,7 +134,9 @@ public class XMLhandler {
     public List<String> getColumnData(String column)    {
         List<String> content = new ArrayList<>();
         for (int i = 0; i < getNumberOfRows(); i++) {
+          if (root.getChildren().get(i).getChild(column)!=null) {
             content.add(root.getChildren().get(i).getChild(column).getText());
+          }
         }
         return content;
     }

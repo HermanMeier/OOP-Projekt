@@ -14,8 +14,9 @@ public class XMLscanner {
   private BlockingQueue<String> columnsToProcess = new ArrayBlockingQueue<>(queueSize);
   private BlockingQueue<String[]> columnDatatypes = new ArrayBlockingQueue<>(queueSize);
 
-  public Map<String, String> startScan(XMLhandler xml) throws InterruptedException {
+  Map<String, String> startScan(XMLhandler xml) throws InterruptedException {
     ExecutorService executor = Executors.newFixedThreadPool(numbrOfThreads);
+    xml.getColumns().forEach(col -> columnsToProcess.add(col));
     for (int i = 0; i < xml.getColumns().size(); i++) {
       Runnable worker = new WorkerThread(columnsToProcess, columnDatatypes, xml);
       executor.execute(worker);

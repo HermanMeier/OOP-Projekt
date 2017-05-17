@@ -19,7 +19,11 @@ public class WorkerThread implements Runnable{
     String currentColumn = columnsToProcess.poll();
     List<String> data = xml.getColumnData(currentColumn);
 
-    //String dataType = xml.meetod(currentColumn, data);
-    //dataTypes.put(dataType);
+    String dataType = xml.dataTypeofColumn(currentColumn, data);
+    try {
+      dataTypes.put(new String[]{currentColumn, dataType});
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 }
