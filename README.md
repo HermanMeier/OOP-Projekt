@@ -18,11 +18,11 @@ For testing purposes you can use:
 * password: xmltosql
 
 
-Users
+# Users
 All new accounts will not have admin rights. Admin account has all commands available. When running Main with commandline arguments, then the login stage will be skipped.
 Users are stored in resources/users.dat.
 
-Commands
+# Commands
 Most commands accept parameters. The correct syntax is <commandName> <param1> <param2> ... . Some commands accept * as a parameter meaning all. When running Main with commandline arguments,
 the arguments will be interpreted as separate commands. Syntax for commandline arguments is <1CommandName>;<param1>;<param2> <2commandName>;<param1>;<param2> ...
 All commands can be displayed using "?" command.
